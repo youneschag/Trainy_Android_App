@@ -58,4 +58,15 @@ interface RoutineDao {
 
     @Query("""UPDATE exercises SET name = :newName WHERE exerciseId = :exerciseId AND exerciseId IN ( SELECT exerciseId FROM routine_exercise_associations WHERE routineId = :routineId)""")
     suspend fun updateExerciseName(routineId: Long, exerciseId: Long, newName: String)
+
+    @Transaction
+    @Query("SELECT * FROM routines")
+    fun getAllFullRoutines(): Flow<List<FullRoutine>>
+
+    @Transaction
+    @Query("SELECT * FROM routines WHERE routineId = :routineId")
+    fun getRoutineWithExercises(routineId: Long): Flow<FullRoutine?>
+
+    @Query("SELECT * FROM exercises ORDER BY exerciseId DESC")
+    fun getAllExercises(): Flow<List<Exercise>>
 }

@@ -75,6 +75,22 @@ class RoutineRepository(
         routineDao.deleteAllRoutines()
     }
 
+    fun getAllFullRoutines(): Flow<List<FullRoutine>> {
+        return routineDao.getAllFullRoutines()
+    }
+
+    fun getRoutineWithExercises(routineId: Long): Flow<FullRoutine?> {
+        return routineDao.getRoutineWithExercises(routineId)
+    }
+
+    suspend fun addExerciseToRoutine(routineId: Long, exerciseId: Long) {
+        routineDao.addExerciseToRoutine(RoutineExerciseAssociation(routineId, exerciseId))
+    }
+
+    fun getAllExercises(): Flow<List<Exercise>> {
+        return routineDao.getAllExercises()
+    }
+
     @WorkerThread
     suspend fun addExercise(routineId: Long, exercise: Exercise) = withContext(dispatcher) {
         routineDao.addExerciseToRoutine(RoutineExerciseAssociation(routineId, exercise.exerciseId))

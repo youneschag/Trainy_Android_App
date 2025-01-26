@@ -2,20 +2,28 @@ package fr.uha.chaguer.trainy.ui.routine
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,16 +36,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.lazy.items
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.RoutineDetailsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.CreateRoutineScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.EditRoutineScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import fr.uha.chaguer.android.database.DateUtils.formatDate
 import fr.uha.chaguer.android.ui.StateScreen
 import fr.uha.chaguer.android.ui.SwipeableItem
 import fr.uha.chaguer.trainy.R
+import fr.uha.chaguer.trainy.model.Exercise
+import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Routine
+import okhttp3.internal.format
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -52,6 +66,8 @@ fun RoutineListScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     var routineToDelete by remember { mutableStateOf<Routine?>(null) }
     var showDeleteAllDialog by remember { mutableStateOf(false) }
+    val fullRoutines by vm.getAllFullRoutines().collectAsStateWithLifecycle(emptyList())
+    val expandedRoutines = remember { mutableStateMapOf<Long, Boolean>() }
 
     Scaffold(
         topBar = {
@@ -117,10 +133,21 @@ fun RoutineListScreen(
                     }
                 } else {
                     SuccessListRoutinesScreen(
-                        uiState = content,
+                        fullRoutines = fullRoutines,
                         navigator = navigator,
-                        onDeleteRequest = { routine -> routineToDelete = routine },
-                        send = { vm.send(it) }
+                        expandedRoutines = expandedRoutines,
+                        onDeleteRequest = { routine ->
+                            routineToDelete = routine // Déclenche la popup de confirmation
+                        },
+                        onEditRequest = { routine ->
+                            navigator.navigate(EditRoutineScreenDestination(routine.routineId))
+                        },
+                        onAddExercise = { routineId ->
+                            navigator.navigate(RoutineDetailsScreenDestination(routineId = routineId))
+                        },
+                        removeExerciseFromRoutine = { routineId, exerciseId ->
+                            vm.removeExerciseFromRoutine(routineId, exerciseId)
+                        }
                     )
                 }
             }
@@ -174,64 +201,182 @@ fun RoutineListScreen(
 
 @Composable
 fun SuccessListRoutinesScreen(
-    uiState: ListRoutinesViewModel.UIState,
+    fullRoutines: List<FullRoutine>,
     navigator: DestinationsNavigator,
+    expandedRoutines: MutableMap<Long, Boolean>,
     onDeleteRequest: (Routine) -> Unit,
-    send: (ListRoutinesViewModel.UIEvent) -> Unit
+    onEditRequest: (Routine) -> Unit,
+    onAddExercise: (Long) -> Unit,
+    removeExerciseFromRoutine: (Long, Long) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         itemsIndexed(
-            items = uiState.routines,
-            key = { _, item -> item.routineId }
-        ) { index, item ->
+            items = fullRoutines,
+            key = { _, fullRoutine -> fullRoutine.routine.routineId } // Clé unique
+        ) { index, fullRoutine ->
+            val isExpanded = expandedRoutines[fullRoutine.routine.routineId] == true
+
             SwipeableItem(
                 modifier = Modifier.padding(8.dp),
-                onEdit = { navigator.navigate(EditRoutineScreenDestination(item.routineId)) }, // Passe l'ID
-                onDelete = { onDeleteRequest(item) }
+                onDelete = { onDeleteRequest(fullRoutine.routine) },
+                onEdit = { onEditRequest(fullRoutine.routine) }
             ) {
-                RoutineContent(routine = item, isEven = index % 2 == 0)
+                RoutineItem(
+                    fullRoutine = fullRoutine,
+                    isExpanded = isExpanded,
+                    onExpandToggle = {
+                        expandedRoutines[fullRoutine.routine.routineId] = !isExpanded
+                    },
+                    onAddExercise = { onAddExercise(fullRoutine.routine.routineId) },
+                    onRemoveExercise = { exerciseId ->
+                        removeExerciseFromRoutine(fullRoutine.routine.routineId, exerciseId)
+                    },
+                    isEven = index % 2 == 0
+                )
             }
         }
     }
 }
 
 @Composable
-fun RoutineContent(routine: Routine, isEven: Boolean) {
-    Column (
+fun RoutineItem(
+    fullRoutine: FullRoutine,
+    isExpanded: Boolean,
+    onExpandToggle: () -> Unit,
+    onAddExercise: () -> Unit,
+    onRemoveExercise: (Long) -> Unit,
+    isEven: Boolean
+) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .shadow(8.dp, shape = MaterialTheme.shapes.medium) // Ajout d'ombre
             .background(
                 if (isEven) Color(0xFFF5F5DC) else Color.White, // Alterne les couleurs du conteneur
                 shape = MaterialTheme.shapes.medium
             )
-            .border(1.dp, Color.Gray, shape = MaterialTheme.shapes.medium)
-    ){
+            .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+            .padding(8.dp)
+    ) {
+        // Header with routine name and expand toggle
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = fullRoutine.routine.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            IconButton(onClick = { onExpandToggle() }) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = if (isExpanded) "Réduire" else "Agrandir"
+                )
+            }
+        }
+
+        // Routine details
         Text(
-            text = routine.name,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(start = 16.dp) // Décaler à droite
+            text = "Objectif: ${fullRoutine.routine.objective}",
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            text = "Objectif: ${routine.objective}",
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 24.dp) // Décaler à droite
+            text = "Fréquence: ${fullRoutine.routine.frequency} fois/semaine",
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            text = "Fréquence: ${routine.frequency} fois/semaine",
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 24.dp) // Décaler à droite
+            text = "Début: ${formatDate(fullRoutine.routine.startDay)}",
+            style = MaterialTheme.typography.bodyMedium
         )
-        Text(
-            text = "Début: ${formatDate(routine.startDay)}",
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 24.dp) // Décaler à droite
-        )
+
+        // Show exercises if expanded
+        if (isExpanded) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Exercices associés :",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            if (fullRoutine.exercises.isEmpty()) {
+                Text(
+                    text = "Aucun exercice associé.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            } else {
+                fullRoutine.exercises.forEach { exercise ->
+                    ExerciseItem(
+                        exercise = exercise,
+                        onRemove = { onRemoveExercise(exercise.exerciseId) }
+                    )
+                }
+            }
+
+            // Button to add an exercise
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onAddExercise,
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text("Ajouter un exercice")
+            }
+        }
     }
 }
 
-fun formatDate(date: Date): String {
-    val formatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    return formatter.format(date)
+@Composable
+fun ExerciseItem(
+    exercise: Exercise,
+    onRemove: () -> Unit // Callback pour supprimer l'exercice de la routine
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .shadow(4.dp, shape = MaterialTheme.shapes.medium)
+            .background(Color(0xFFF0F0F0), shape = MaterialTheme.shapes.medium)
+            .border(1.dp, Color.Gray, shape = MaterialTheme.shapes.medium)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = exercise.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Durée: ${exercise.duration} minutes",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "Répétitions: ${exercise.repetitions}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "Description: ${exercise.description}",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        IconButton(
+            onClick = onRemove,
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Supprimer l'association",
+                tint = Color.Red
+            )
+        }
+    }
 }

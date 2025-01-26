@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.repository.RoutineRepository
 import fr.uha.chaguer.android.viewmodel.Result
+import fr.uha.chaguer.trainy.model.FullRoutine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -74,6 +75,16 @@ class ListRoutinesViewModel @Inject constructor(
     fun deleteAllRoutines() {
         viewModelScope.launch {
             repository.deleteAllRoutines()
+        }
+    }
+
+    fun getAllFullRoutines(): Flow<List<FullRoutine>> {
+        return repository.getAllFullRoutines()
+    }
+
+    fun removeExerciseFromRoutine(routineId: Long, exerciseId: Long) {
+        viewModelScope.launch {
+            repository.removeExercise(routineId, exerciseId)
         }
     }
 }

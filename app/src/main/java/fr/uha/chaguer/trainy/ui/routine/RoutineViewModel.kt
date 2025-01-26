@@ -9,6 +9,8 @@ import fr.uha.chaguer.android.ui.app.UITitleBuilder
 import fr.uha.chaguer.android.ui.app.UITitleState
 import fr.uha.chaguer.android.ui.field.FieldWrapper
 import fr.uha.chaguer.android.viewmodel.Result
+import fr.uha.chaguer.trainy.model.Exercise
+import fr.uha.chaguer.trainy.model.FullRoutine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -184,5 +186,16 @@ class RoutineViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updateRoutine(updatedRoutine)
         }
+    }
+    fun getAllExercises(): Flow<List<Exercise>> {
+        return repository.getAllExercises()
+    }
+
+    fun getRoutineWithExercises(routineId: Long): Flow<FullRoutine?> {
+        return repository.getRoutineWithExercises(routineId)
+    }
+
+    fun addExerciseToRoutine(routineId: Long, exerciseId: Long) = viewModelScope.launch {
+        repository.addExerciseToRoutine(routineId, exerciseId)
     }
 }
