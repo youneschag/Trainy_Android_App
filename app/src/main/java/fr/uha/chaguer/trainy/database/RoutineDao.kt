@@ -6,6 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
+import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
@@ -22,7 +24,7 @@ interface RoutineDao {
 
     @Transaction
     @Query("SELECT * FROM routines WHERE routineId = :routineId")
-    fun getRoutineById(routineId: Long): Flow<FullRoutine?>
+    fun getRoutineById(routineId: Long): Flow<Routine?>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun createRoutine(routine: Routine)  : Long
@@ -38,6 +40,9 @@ interface RoutineDao {
 
     @Delete
     suspend fun removeExerciseFromRoutine(association: RoutineExerciseAssociation)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateRoutine(routine: Routine) : Long
 
     @Query("UPDATE routines SET name = :newName WHERE routineId = :routineId")
     suspend fun updateName(routineId: Long, newName: String)

@@ -39,6 +39,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.Routine
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Destination<RootGraph>(start = true)
 @Composable
@@ -62,18 +65,26 @@ fun GreetingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = stringResource(R.string.welcome_message),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.FitnessCenter,
-                    contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                // Row pour aligner le titre et l'icône horizontalement
+                Row(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FitnessCenter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .padding(end = 8.dp), // Espace entre l'icône et le texte
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = stringResource(R.string.welcome_message),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
                 Text(
                     text = stringResource(R.string.app_description),
                     fontSize = 16.sp,
@@ -201,6 +212,11 @@ fun <T> SubCard(item: T) {
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
+                    Text(
+                        text = "Début: ${formatDate(item.startDay)}",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
                 }
                 else -> {
                     Text(text = item.toString(), fontSize = 14.sp, color = Color.Gray)
@@ -208,4 +224,9 @@ fun <T> SubCard(item: T) {
             }
         }
     }
+}
+
+fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    return formatter.format(date)
 }

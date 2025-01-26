@@ -26,7 +26,7 @@ fun SuccessRoutineScreen(
         ) {
             // Champ pour le nom de la routine
             OutlinedTextFieldWrapper(
-                field = routine.name,
+                field = routine.nameState,
                 onValueChange = { send(RoutineViewModel.UIEvent.NameChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 labelId = R.string.name,
@@ -34,7 +34,7 @@ fun SuccessRoutineScreen(
 
             // Champ pour la date de début
             OutlinedDateFieldWrapper(
-                field = routine.startDay,
+                field = routine.dayState,
                 onValueChange = { send(RoutineViewModel.UIEvent.StartDayChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 labelId = R.string.start_date,
@@ -42,7 +42,7 @@ fun SuccessRoutineScreen(
 
             // Champ pour la fréquence
             OutlinedIntFieldWrapper(
-                field = routine.frequency,
+                field = routine.frequencyState,
                 onValueChange = { send(RoutineViewModel.UIEvent.FrequencyChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 labelId = R.string.frequency,
@@ -50,24 +50,11 @@ fun SuccessRoutineScreen(
 
             // Nouveau champ pour l'objectif
             OutlinedTextFieldWrapper(
-                field = routine.objective,
+                field = routine.objectiveState,
                 onValueChange = { send(RoutineViewModel.UIEvent.ObjectiveChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 labelId = R.string.objective,
             )
-
-            // Liste des exercices
-            /*OutlinedExercisesFieldWrapper(
-                field = routine.exercises,
-                onExerciseChange = { updatedExercise ->
-                    send(RoutineViewModel.UIEvent.UpdateExercise(updatedExercise.id, updatedExercise.name))
-                },
-                onExerciseDelete = { exerciseToDelete ->
-                    send(RoutineViewModel.UIEvent.RemoveExercise(exerciseToDelete.id))
-                },
-                modifier = Modifier.fillMaxWidth(),
-                labelId = R.string.exercises
-            )*/
         }
     }
 }

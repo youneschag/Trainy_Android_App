@@ -61,9 +61,9 @@ fun SwipeableItem(
 
             val color by animateColorAsState(
                 targetValue = when (dismissState.targetValue) {
-                    SwipeToDismissBoxValue.Settled -> Color.LightGray
-                    SwipeToDismissBoxValue.EndToStart -> Color(0xFF804040)
-                    SwipeToDismissBoxValue.StartToEnd -> Color(0xFF408040)
+                    SwipeToDismissBoxValue.Settled -> Color.White
+                    SwipeToDismissBoxValue.EndToStart -> Color(0xFFFF0000)
+                    SwipeToDismissBoxValue.StartToEnd -> Color(0xFF00FF00)
                 }, label = "color"
             )
             val icon = when (direction) {

@@ -81,7 +81,7 @@ fun ExerciseListScreen(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.list_exercise), style = MaterialTheme.typography.titleLarge) }
             )
-       },
+        },
         bottomBar = {
             Row(modifier = Modifier
                 .fillMaxWidth()

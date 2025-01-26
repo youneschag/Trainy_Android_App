@@ -21,7 +21,7 @@ class RoutineRepository(
         return routineDao.getAllRoutines()
     }
 
-    fun getRoutineById(id: Long): Flow<FullRoutine?> {
+    fun getRoutineById(id: Long): Flow<Routine?> {
         return routineDao.getRoutineById(id)
     }
 
@@ -53,6 +53,11 @@ class RoutineRepository(
     @WorkerThread
     suspend fun updateExerciseName(routineId: Long, exerciseId: Long, newName: String) = withContext(dispatcher) {
         routineDao.updateExerciseName(routineId, exerciseId, newName)
+    }
+
+    @WorkerThread
+    suspend fun updateRoutine(routine: Routine) = withContext(dispatcher) {
+        routineDao.updateRoutine(routine)
     }
 
     @WorkerThread

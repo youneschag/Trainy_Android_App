@@ -70,4 +70,10 @@ class ListRoutinesViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteAllRoutines() {
+        viewModelScope.launch {
+            repository.deleteAllRoutines()
+        }
+    }
 }

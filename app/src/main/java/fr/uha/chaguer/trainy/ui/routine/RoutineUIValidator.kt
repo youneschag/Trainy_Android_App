@@ -1,13 +1,14 @@
 package fr.uha.chaguer.trainy.ui.routine
 
+import fr.uha.chaguer.android.viewmodel.Result
 import fr.uha.chaguer.trainy.R
-import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Exercise
+import kotlinx.coroutines.flow.StateFlow
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
 
-class RoutineUIValidator(private val routine: FullRoutine) {
+class RoutineUIValidator(private val routine: StateFlow<Result<RoutineViewModel.UIState>>) {
 
     fun validateName(newValue: String): Int? {
         return when {
