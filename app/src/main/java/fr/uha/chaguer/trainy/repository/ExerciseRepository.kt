@@ -63,4 +63,8 @@ class ExerciseRepository(
     suspend fun deleteExercise(exercise: Exercise) = withContext(dispatcher) {
         exerciseDao.deleteExercise(exercise)
     }
+
+    suspend fun deleteAllExercises() {
+        exerciseDao.deleteAllExercises()
+    }
 }

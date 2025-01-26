@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExerciseDao {
-    @Query("SELECT * FROM exercises ORDER BY name ASC")
+    @Query("SELECT * FROM exercises ORDER BY exerciseId DESC")
     fun getAllExercises(): Flow<List<Exercise>>
 
     @Query("SELECT * FROM exercises WHERE exerciseId = :exerciseId")
@@ -44,4 +44,7 @@ interface ExerciseDao {
 
     @Query("DELETE FROM routine_exercise_associations WHERE routineId = :routineId AND exerciseId = :exerciseId")
     suspend fun removeExerciseFromRoutine(routineId: Long, exerciseId: Long)
+
+    @Query("DELETE FROM exercises")
+    suspend fun deleteAllExercises()
 }

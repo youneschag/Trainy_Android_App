@@ -59,6 +59,10 @@ class ListExercisesViewModel @Inject constructor(
         repository.updateExerciseName(exerciseId, newName)
     }
 
+    fun deleteAllExercises() = viewModelScope.launch {
+        repository.deleteAllExercises()
+    }
+
     private suspend fun onAdd(exercise: Exercise) {
         repository.addExercise(exercise)
     }

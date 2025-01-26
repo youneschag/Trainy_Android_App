@@ -44,22 +44,28 @@ class ExerciseViewModel @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     data class UIState(
-        val args: Array<FieldWrapper<out Any>>
-    ) {
-        val nameState: FieldWrapper<String> = args[0] as FieldWrapper<String>
-        val descriptionState: FieldWrapper<String> = args[1] as FieldWrapper<String>
-        val durationState: FieldWrapper<Int> = args[2] as FieldWrapper<Int>
-        val repetitionsState: FieldWrapper<Int> = args[3] as FieldWrapper<Int>
-    }
+        val nameState: FieldWrapper<String>,
+        val descriptionState: FieldWrapper<String>,
+        val durationState: FieldWrapper<Int>,
+        val repetitionsState: FieldWrapper<Int>
+    )
 
     val uiState: StateFlow<Result<UIState>> = combine(
         _nameState, _descriptionState, _durationState, _repetitionsState
-    ) { args: Array<FieldWrapper<out Any>> -> Result.Success(UIState(args)) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = Result.Loading
+    ) { name, description, duration, repetitions ->
+        Result.Success(
+            UIState(
+                nameState = name,
+                descriptionState = description,
+                durationState = duration,
+                repetitionsState = repetitions
+            )
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = Result.Loading
+    )
 
     private class FieldBuilder(private val validator: ExerciseUIValidator) {
         fun buildName(newValue: String): FieldWrapper<String> {
@@ -105,7 +111,13 @@ class ExerciseViewModel @Inject constructor(
 
     private fun hasError(fields: Result<UIState>): Boolean? {
         if (fields !is Result.Success) return null
-        return fields.content.args.any { it.errorId != null }
+        val content = fields.content
+        return listOf(
+            content.nameState.errorId,
+            content.descriptionState.errorId,
+            content.durationState.errorId,
+            content.repetitionsState.errorId
+        ).any { it != null }
     }
 
     init {
@@ -122,6 +134,7 @@ class ExerciseViewModel @Inject constructor(
         data class RepetitionsChanged(val newValue: Int) : UIEvent()
         data class OnAddExercise(val routineId: Long, val exercise: Exercise) : UIEvent()
         data class OnRemoveExercise(val routineId: Long, val exerciseId: Long) : UIEvent()
+        object SaveChanges : UIEvent() // Événement pour sauvegarder les modifications
     }
 
     fun send(uiEvent: UIEvent) {
@@ -145,6 +158,7 @@ class ExerciseViewModel @Inject constructor(
                 is UIEvent.OnRemoveExercise -> {
                     repository.deleteExerciseFromRoutine(uiEvent.routineId, uiEvent.exerciseId)
                 }
+                UIEvent.SaveChanges -> save() // Sauvegarde des modifications
             }
         }
     }
@@ -170,5 +184,16 @@ class ExerciseViewModel @Inject constructor(
             _repetitionsState.value.value!!
         )
         repository.updateExercise(exercise)
+    }
+
+    fun initializeFields() {
+        _nameState.value = FieldWrapper("Push-ups")
+        _descriptionState.value = FieldWrapper("Arms in the bar while holding")
+        _durationState.value = FieldWrapper(15)
+        _repetitionsState.value = FieldWrapper(3)
+    }
+
+    fun getAllExercises(): Flow<List<Exercise>> {
+        return repository.getAllExercises()
     }
 }
