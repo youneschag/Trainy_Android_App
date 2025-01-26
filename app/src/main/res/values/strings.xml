@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Trainy</string>
+    <string name="welcome_message">Bienvenue sur Trainy!</string>
+    <string name="app_description">
+    Votre partenaire intelligent pour structurer vos entraînements, atteindre vos objectifs et suivre vos progrès.
+    </string>
     <string name="routines">Routines</string>
     <string name="exercises">Exercices</string>
     <string name="progress">Progrès</string>
