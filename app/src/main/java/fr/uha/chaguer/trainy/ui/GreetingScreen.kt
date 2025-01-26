@@ -1,5 +1,6 @@
 package fr.uha.chaguer.trainy.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -71,13 +73,12 @@ fun GreetingScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.FitnessCenter,
-                        contentDescription = null,
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = "App Logo",
                         modifier = Modifier
-                            .size(48.dp)
-                            .padding(end = 8.dp), // Espace entre l'icône et le texte
-                        tint = MaterialTheme.colorScheme.primary
+                            .size(100.dp)
+                            .padding(bottom = 16.dp)
                     )
                     Text(
                         text = stringResource(R.string.welcome_message),
