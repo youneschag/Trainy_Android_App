@@ -28,6 +28,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -74,6 +75,7 @@ fun ExerciseListScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     var exerciseToDelete by remember { mutableStateOf<Exercise?>(null) } // État pour la suppression
     var showDeleteAllDialog by remember { mutableStateOf(false) } // État pour le popup de confirmation
+    var searchQuery by remember { mutableStateOf("") } // État pour la recherche
     val context = LocalContext.current
 
     Scaffold(
@@ -125,27 +127,67 @@ fun ExerciseListScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
+            // Barre de recherche
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Rechercher un exercice") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                singleLine = true
+            )
+
             StateScreen(state = uiState) { content ->
-                if (content.exercises.isEmpty()) {
-                    // Afficher un message si la liste est vide
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.no_exercises_message),
-                            fontSize = 16.sp
-                        )
+                // Filtrer les exercices en fonction de la recherche
+                val filteredExercises = content.exercises.filter { exercise ->
+                    searchQuery.length < 3 || exercise.name.contains(searchQuery, ignoreCase = true)
+                }
+
+                when {
+                    // Si la liste globale est vide
+                    content.exercises.isEmpty() -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.no_exercises_message),
+                                fontSize = 16.sp
+                            )
+                        }
                     }
-                } else {
-                    SuccessListExercisesScreen(
-                        uiState = content,
-                        navigator = navigator,
-                        onDeleteRequest = { exercise -> exerciseToDelete = exercise },
-                        send = { vm.send(it) }
-                    )
+
+                    // Si la liste filtrée est vide
+                    filteredExercises.isEmpty() -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Aucun exercice trouvé",
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+
+                    // Sinon, afficher les exercices filtrés
+                    else -> {
+                        LazyColumn {
+                            itemsIndexed(filteredExercises) { index, exercise ->
+                                ExerciseItem(
+                                    exercise = exercise,
+                                    onEdit = { navigator.navigate(EditExerciseScreenDestination(exercise.exerciseId)) },
+                                    onDelete = { exerciseToDelete = exercise },
+                                    isEven = index % 2 == 0
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
