@@ -7,9 +7,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import fr.uha.chaguer.trainy.database.ExerciseDao
+import fr.uha.chaguer.trainy.database.ProgressDao
 import fr.uha.chaguer.trainy.database.RoutineDao
+import fr.uha.chaguer.trainy.database.RoutineProgressDao
 import fr.uha.chaguer.trainy.database.TrainyDatabase
 import fr.uha.chaguer.trainy.repository.ExerciseRepository
+import fr.uha.chaguer.trainy.repository.ProgressRepository
 import fr.uha.chaguer.trainy.repository.RoutineRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -53,4 +56,20 @@ object AppModule {
         ioDispatcher: CoroutineDispatcher,
         routineDao: RoutineDao
     ) = RoutineRepository(ioDispatcher, routineDao)
+
+    @Singleton
+    @Provides
+    fun provideProgressDao(db: TrainyDatabase) = db.progressDAO()
+
+    @Singleton
+    @Provides
+    fun provideProgressRepository(
+        ioDispatcher: CoroutineDispatcher,
+        progressDao: ProgressDao,
+        routineProgressDao: RoutineProgressDao
+    ) = ProgressRepository(ioDispatcher, progressDao, routineProgressDao)
+
+    @Singleton
+    @Provides
+    fun provideRoutineProgressDao(db: TrainyDatabase) = db.routineProgressDAO()
 }

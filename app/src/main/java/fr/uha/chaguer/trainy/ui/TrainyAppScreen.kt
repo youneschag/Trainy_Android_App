@@ -58,20 +58,20 @@ private val bottomNavigations = arrayOf<BottomBarDestination>(
         labelId = R.string.home
     ),
     BottomBarDestination(
-        direction = RoutineListScreenDestination,
-        icon = IconRender(
-            focused = IconPicture(vector = Icons.Filled.List),
-            unfocused = IconPicture(vector = Icons.Outlined.List)
-        ),
-        labelId = R.string.routines
-    ),
-    BottomBarDestination(
         direction = ExerciseListScreenDestination,
         icon = IconRender(
             focused = IconPicture(vector = Icons.Filled.FitnessCenter),
             unfocused = IconPicture(vector = Icons.Outlined.FitnessCenter)
         ),
         labelId = R.string.exercises
+    ),
+    BottomBarDestination(
+        direction = RoutineListScreenDestination,
+        icon = IconRender(
+            focused = IconPicture(vector = Icons.Filled.List),
+            unfocused = IconPicture(vector = Icons.Outlined.List)
+        ),
+        labelId = R.string.routines
     ),
     BottomBarDestination(
         direction = ProgressTrackingScreenDestination,

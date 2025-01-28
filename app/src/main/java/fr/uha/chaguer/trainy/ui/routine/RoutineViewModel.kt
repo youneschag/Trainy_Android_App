@@ -11,6 +11,7 @@ import fr.uha.chaguer.android.ui.field.FieldWrapper
 import fr.uha.chaguer.android.viewmodel.Result
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.FullRoutine
+import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

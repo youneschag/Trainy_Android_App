@@ -28,7 +28,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,6 +45,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.Routine
+import fr.uha.chaguer.trainy.ui.theme.MontserratFont
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -54,68 +59,60 @@ fun GreetingScreen(
     val exercises by vm.getAllExercises().collectAsStateWithLifecycle(emptyList())
     val routines by vm.getAllRoutines().collectAsStateWithLifecycle(emptyList())
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        // Titre et message de bienvenue
-        item {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                // Row pour aligner le titre et l'icône horizontalement
-                Row(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "App Logo",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(bottom = 16.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.welcome_message),
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                Text(
-                    text = stringResource(R.string.app_description),
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-            }
-        }
-        // Section des routines
-        item {
-            SectionCard(
-                title = "Routines",
-                items = routines.take(3),
-                emptyMessage = "Aucune routine pour l'instant.",
-                onSeeMore = { navigator.navigate(RoutineListScreenDestination) }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.welcome_message),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = MontserratFont
             )
-        }
-        item {
-            Spacer(modifier = Modifier.padding(8.dp))
+            Text(
+                text = stringResource(R.string.app_description),
+                fontSize = 16.sp,
+                fontFamily = MontserratFont,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
         }
 
-        // Section des exercices
-        item {
-            SectionCard(
-                title = "Exercices",
-                items = exercises.take(3),
-                emptyMessage = "Aucun exercice pour l'instant.",
-                onSeeMore = { navigator.navigate(ExerciseListScreenDestination) }
-            )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f), // Permet d'occuper l'espace restant
+            verticalArrangement = Arrangement.Top
+        ) {
+            // Section des routines
+            item {
+                SectionCard(
+                    title = "🔥 Routines 🔥",
+                    items = routines.take(3),
+                    emptyMessage = "Aucune routine enregistrée",
+                    onSeeMore = { navigator.navigate(RoutineListScreenDestination) }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.padding(8.dp))
+            }
+
+            // Section des exercices
+            item {
+                SectionCard(
+                    title = "💪 Exercices 💪",
+                    items = exercises.take(3),
+                    emptyMessage = "Aucun exercice pour l'instant.",
+                    onSeeMore = { navigator.navigate(ExerciseListScreenDestination) }
+                )
+            }
         }
     }
 }
@@ -136,14 +133,16 @@ fun <T> SectionCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = MontserratFont,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             if (items.isEmpty()) {
                 Text(
                     text = emptyMessage,
                     fontSize = 16.sp,
+                    fontFamily = MontserratFont,
                     color = Color.Gray
                 )
             } else {
@@ -159,7 +158,7 @@ fun <T> SectionCard(
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(onClick = onSeeMore) {
-                    Text(text = "Voir plus")
+                    Text(text = "🔍 Voir plus")
                     Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
                 }
             }
@@ -180,45 +179,132 @@ fun <T> SubCard(item: T) {
             when (item) {
                 is Exercise -> {
                     Text(
-                        text = item.name,
+                        text = "🏋️ ${item.name}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = MontserratFont,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    Text(
-                        text = "Description: ${item.description}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = "Durée: ${item.duration} minutes, Répétitions: ${item.repetitions}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "📝 Description:",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = item.description,
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            color = Color.Gray,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "⏳ Durée:",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = "${item.duration} min",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            color = Color.Gray,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "🔄 Répétitions:",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = "${item.repetitions}",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            color = Color.Gray,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
                 }
+
                 is Routine -> {
                     Text(
-                        text = item.name,
+                        text = "🔥 ${item.name}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = MontserratFont,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    Text(
-                        text = "Objectif: ${item.objective}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = "Fréquence: ${item.frequency} fois/semaine",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = "Début: ${formatDate(item.startDay)}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "🎯 Objectif:",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = item.objective,
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            color = Color.Gray,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "🔄 Fréquence:",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = "${item.frequency} fois/semaine",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            color = Color.Gray,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "📅 Début:",
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = formatDate(item.startDay),
+                            fontSize = 14.sp,
+                            fontFamily = MontserratFont,
+                            color = Color.Gray,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
                 }
+
                 else -> {
                     Text(text = item.toString(), fontSize = 14.sp, color = Color.Gray)
                 }

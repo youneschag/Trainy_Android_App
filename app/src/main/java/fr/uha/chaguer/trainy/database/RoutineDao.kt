@@ -36,7 +36,7 @@ interface RoutineDao {
     suspend fun deleteRoutine(routineId: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addExerciseToRoutine(association: RoutineExerciseAssociation)
+    fun addExerciseToRoutine(association: RoutineExerciseAssociation)
 
     @Delete
     suspend fun removeExerciseFromRoutine(association: RoutineExerciseAssociation)

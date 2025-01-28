@@ -1,10 +1,12 @@
 package fr.uha.chaguer.trainy.repository
 
 import androidx.annotation.WorkerThread
+import fr.uha.chaguer.trainy.database.ProgressDao
 import fr.uha.chaguer.trainy.database.RoutineDao
 import fr.uha.chaguer.trainy.database.RoutineUpdateDTO
 import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Exercise
+import fr.uha.chaguer.trainy.model.Progress
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import kotlinx.coroutines.CoroutineDispatcher
@@ -83,7 +85,8 @@ class RoutineRepository(
         return routineDao.getRoutineWithExercises(routineId)
     }
 
-    suspend fun addExerciseToRoutine(routineId: Long, exerciseId: Long) {
+    @WorkerThread
+    suspend fun addExerciseToRoutine(routineId: Long, exerciseId: Long) = withContext(dispatcher) {
         routineDao.addExerciseToRoutine(RoutineExerciseAssociation(routineId, exerciseId))
     }
 
