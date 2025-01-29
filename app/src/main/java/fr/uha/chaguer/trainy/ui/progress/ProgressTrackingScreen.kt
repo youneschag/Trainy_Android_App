@@ -25,13 +25,13 @@ import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import fr.uha.chaguer.android.database.DateUtils.formatDate
 import fr.uha.chaguer.android.ui.StateScreen
 import fr.uha.chaguer.android.ui.app.AppTopBar
 import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.model.RoutineProgress
-import fr.uha.chaguer.trainy.ui.formatDate
 import fr.uha.chaguer.trainy.ui.routine.ListRoutinesViewModel
 import fr.uha.chaguer.trainy.ui.routine.RoutineViewModel
 import fr.uha.chaguer.trainy.ui.theme.MontserratFont
