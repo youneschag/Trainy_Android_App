@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,9 +34,9 @@ import fr.uha.chaguer.trainy.model.RoutineProgress
 import fr.uha.chaguer.trainy.ui.formatDate
 import fr.uha.chaguer.trainy.ui.routine.ListRoutinesViewModel
 import fr.uha.chaguer.trainy.ui.routine.RoutineViewModel
+import fr.uha.chaguer.trainy.ui.theme.MontserratFont
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
 fun ProgressTrackingScreen(
@@ -52,19 +54,30 @@ fun ProgressTrackingScreen(
     val errorDialogState = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.progress), style = MaterialTheme.typography.titleLarge) }
-            )
-        }
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(16.dp)
+    ) {
+        // ✅ Titre et barre violette
         Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Navigateur de routine
+            Text(
+                text = stringResource(R.string.progress),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = MontserratFont
+            )
+            Divider(
+                color = Color(0xFF673AB7),
+                thickness = 2.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
             RoutineNavigator(
                 routines = routines,
                 currentIndex = currentIndex.value,
@@ -77,7 +90,9 @@ fun ProgressTrackingScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val exercises = fullRoutines.find { it.routine.routineId == selectedRoutine?.routineId }?.exercises ?: emptyList()
+                val exercises =
+                    fullRoutines.find { it.routine.routineId == selectedRoutine?.routineId }?.exercises
+                        ?: emptyList()
                 items(exercises) { exercise ->
                     val isExerciseCompleted = progressList.any {
                         it.exerciseId == exercise.exerciseId &&
@@ -113,7 +128,8 @@ fun ProgressTrackingScreen(
                         )
 
                         // Progrès réalisés pour cet exercice
-                        val progressForExercise = progressList.filter { it.exerciseId == exercise.exerciseId }
+                        val progressForExercise =
+                            progressList.filter { it.exerciseId == exercise.exerciseId }
                         if (progressForExercise.isNotEmpty()) {
                             Text(
                                 text = "Progrès réalisés :",
@@ -128,7 +144,11 @@ fun ProgressTrackingScreen(
                                 }
 
                                 Text(
-                                    text = "$exerciseName : ${progress.completedRepetitions} répétitions, ${progress.completedDuration} minutes (${formatDate(progress.date)})",
+                                    text = "$exerciseName : ${progress.completedRepetitions} répétitions, ${progress.completedDuration} minutes (${
+                                        formatDate(
+                                            progress.date
+                                        )
+                                    })",
                                     style = MaterialTheme.typography.bodySmall,
                                     modifier = Modifier.padding(start = 16.dp, top = 2.dp)
                                 )
@@ -138,20 +158,20 @@ fun ProgressTrackingScreen(
                 }
             }
         }
+    }
 
-        if (errorDialogState.value) {
-            AlertDialog(
-                onDismissRequest = { errorDialogState.value = false },
-                confirmButton = {
-                    TextButton(onClick = { errorDialogState.value = false }) {
-                        Text("OK")
-                    }
-                },
-                text = {
-                    Text(text = errorMessage.value)
+    if (errorDialogState.value) {
+        AlertDialog(
+            onDismissRequest = { errorDialogState.value = false },
+            confirmButton = {
+                TextButton(onClick = { errorDialogState.value = false }) {
+                    Text("OK")
                 }
-            )
-        }
+            },
+            text = {
+                Text(text = errorMessage.value)
+            }
+        )
     }
 }
 

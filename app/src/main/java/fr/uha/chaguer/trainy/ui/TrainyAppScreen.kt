@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.generated.destinations.GreetingScreenDes
 import com.ramcosta.composedestinations.generated.destinations.RoutineListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ExerciseListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProgressTrackingScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import fr.uha.chaguer.android.model.IconPicture
 import fr.uha.chaguer.android.model.IconRender
 import fr.uha.chaguer.android.ui.app.AppBottomBar
@@ -80,5 +81,13 @@ private val bottomNavigations = arrayOf<BottomBarDestination>(
             unfocused = IconPicture(vector = Icons.Outlined.ShowChart)
         ),
         labelId = R.string.progress
+    ),
+    BottomBarDestination(
+        direction = SettingsScreenDestination,
+        icon = IconRender(
+            focused = IconPicture(vector = Icons.Filled.Settings),
+            unfocused = IconPicture(vector = Icons.Outlined.Settings)
+        ),
+        labelId = R.string.settings
     ),
 )

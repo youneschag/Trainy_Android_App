@@ -1,6 +1,8 @@
 package fr.uha.chaguer.trainy.ui.routine
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,8 +23,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,76 +39,104 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
 fun RoutineDetailsScreen(
-    routineId: Long,
     vm: RoutineViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    routineId: Long,
 ) {
     val routineWithExercises by vm.getRoutineWithExercises(routineId)
         .collectAsStateWithLifecycle(initialValue = null)
     val allExercises by vm.getAllExercises().collectAsStateWithLifecycle(emptyList())
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Détails de la routine") },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Retour")
-                    }
-                }
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp) // 🔹 Moins d'espace entre les champs
+    ) {
+        // ✅ Titre avec flèche de retour
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(onClick = { navigator.popBackStack() }) { // 🔙 Flèche de retour
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Retour",
+                    tint = Color(0xFF673AB7)
+                )
+            }
+            Text(
+                text = "✍ Détails de la routine",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp)
             )
         }
-    ) { innerPadding ->
+
+        // Vérifier si les données sont disponibles
         routineWithExercises?.let { fullRoutine ->
             Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(16.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Display routine details
+                // ✅ Affichage des détails de la routine
                 Text(
                     text = fullRoutine.routine.name,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 Text(
-                    text = "Objectif: ${fullRoutine.routine.objective}",
+                    text = "🎯 Objectif: ${fullRoutine.routine.objective}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Fréquence: ${fullRoutine.routine.frequency} fois/semaine",
+                    text = "📅 Fréquence: ${fullRoutine.routine.frequency} fois/semaine",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Début: ${formatDate(fullRoutine.routine.startDay)}",
+                    text = "⏳ Début: ${formatDate(fullRoutine.routine.startDay)}",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 Divider()
 
-                // List of associated exercises
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // ✅ Liste des exercices associés
                 Text(
-                    text = "Exercices associés",
+                    text = "🏋️ Exercices associés",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
+
                 if (fullRoutine.exercises.isEmpty()) {
-                    Text(text = "Aucun exercice associé.", color = Color.Gray)
+                    Text(
+                        text = "Aucun exercice associé.",
+                        color = Color.Gray,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
                 } else {
-                    fullRoutine.exercises.forEach { exercise ->
-                        Text(text = exercise.name, style = MaterialTheme.typography.bodyLarge)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f) // ✅ Permet d'éviter une hauteur infinie
+                            .fillMaxWidth()
+                    ) {
+                        fullRoutine.exercises.forEach { exercise ->
+                            Text(
+                                text = "✔ ${exercise.name}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Dropdown to add existing exercises
+                // ✅ Dropdown pour ajouter des exercices existants
                 var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
 
                 ExerciseDropdownMenu(
@@ -116,17 +148,22 @@ fun RoutineDetailsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // ✅ Bouton d'association d'un exercice
                 Button(
                     onClick = {
                         selectedExercise?.let {
                             vm.addExerciseToRoutine(routineId, it.exerciseId)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = selectedExercise != null
                 ) {
-                    Text("Associer l'exercice")
+                    Text("📌 Associer l'exercice")
                 }
             }
+        } ?: run {
+            // ✅ Gestion de l'état où les données ne sont pas encore chargées
+            Text(text = "Chargement des détails...", color = Color.Gray)
         }
     }
 }

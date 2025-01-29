@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,15 +25,20 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,10 +69,11 @@ import fr.uha.chaguer.android.ui.app.AppMenuEntry
 import fr.uha.chaguer.android.ui.app.AppTopBar
 import fr.uha.chaguer.android.ui.app.UITitleState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
+import fr.uha.chaguer.trainy.ui.theme.MontserratFont
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
 fun ExerciseListScreen(
@@ -73,174 +81,169 @@ fun ExerciseListScreen(
     navigator: DestinationsNavigator
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-    var exerciseToDelete by remember { mutableStateOf<Exercise?>(null) } // État pour la suppression
-    var showDeleteAllDialog by remember { mutableStateOf(false) } // État pour le popup de confirmation
-    var searchQuery by remember { mutableStateOf("") } // État pour la recherche
+    var exerciseToDelete by remember { mutableStateOf<Exercise?>(null) }
+    var showDeleteAllDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.list_exercise), style = MaterialTheme.typography.titleLarge) }
-            )
-        },
-        bottomBar = {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-            ) {
-                // Bouton Ajouter
-                Button(
-                    onClick = { navigator.navigate(CreateExerciseScreenDestination) },
-                    modifier = Modifier
-                        .weight(1f) // Prend 50 % de la largeur
-                        .fillMaxWidth()
-                        .shadow(4.dp, shape = MaterialTheme.shapes.medium),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(Icons.Filled.Add, contentDescription = null)
-                    Text(text = "Ajouter", modifier = Modifier.padding(start = 8.dp))
-                }
-
-                // Bouton Supprimer tout
-                Button(
-                    onClick = { showDeleteAllDialog = true }, // Affiche le popup
-                    modifier = Modifier
-                        .weight(1f) // Prend 50 % de la largeur
-                        .fillMaxWidth()
-                        .shadow(4.dp, shape = MaterialTheme.shapes.medium),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(Icons.Filled.Delete, contentDescription = null)
-                    Text(text = "Tout supprimer", modifier = Modifier.padding(start = 8.dp))
-                }
-            }
-        }
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(16.dp)
+    ) {
+        // ✅ Titre et barre violette
         Column(
-            modifier = Modifier.padding(innerPadding)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Barre de recherche
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Rechercher un exercice") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                singleLine = true
+            Text(
+                text = stringResource(R.string.list_exercise),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = MontserratFont
             )
+            Divider(
+                color = Color(0xFF673AB7),
+                thickness = 2.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
 
-            StateScreen(state = uiState) { content ->
-                // Filtrer les exercices en fonction de la recherche
-                val filteredExercises = content.exercises.filter { exercise ->
-                    searchQuery.length < 3 || exercise.name.contains(searchQuery, ignoreCase = true)
+        // ✅ Barre de recherche
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("🔍 Rechercher un exercice") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            singleLine = true
+        )
+
+        var isExerciseListEmpty by remember { mutableStateOf(true) } // État pour vérifier si la liste est vide
+
+        // ✅ Liste des exercices
+        StateScreen(state = uiState) { content ->
+            val filteredExercises = content.exercises.filter {
+                searchQuery.length < 3 || it.name.contains(searchQuery, ignoreCase = true)
+            }
+
+            isExerciseListEmpty = content.exercises.isEmpty() // Mise à jour de l'état
+
+            if (content.exercises.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Aucun exercice disponible",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
                 }
-
-                when {
-                    // Si la liste globale est vide
-                    content.exercises.isEmpty() -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.no_exercises_message),
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-
-                    // Si la liste filtrée est vide
-                    filteredExercises.isEmpty() -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "Aucun exercice trouvé",
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-
-                    // Sinon, afficher les exercices filtrés
-                    else -> {
-                        LazyColumn {
-                            itemsIndexed(filteredExercises) { index, exercise ->
-                                ExerciseItem(
-                                    exercise = exercise,
-                                    onEdit = { navigator.navigate(EditExerciseScreenDestination(exercise.exerciseId)) },
-                                    onDelete = { exerciseToDelete = exercise },
-                                    isEven = index % 2 == 0
-                                )
-                            }
-                        }
+            } else if (filteredExercises.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Aucun exercice trouvé",
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    itemsIndexed(filteredExercises) { index, exercise ->
+                        ExerciseItem(
+                            exercise = exercise,
+                            onEdit = { navigator.navigate(EditExerciseScreenDestination(exercise.exerciseId)) },
+                            onDelete = { exerciseToDelete = exercise },
+                            isEven = index % 2 == 0
+                        )
                     }
                 }
             }
         }
 
-        // Boîte de dialogue de confirmation
-        if (exerciseToDelete != null) {
-            AlertDialog(
-                onDismissRequest = { exerciseToDelete = null },
-                title = {
-                    Text("Confirmer la suppression")
-                },
-                text = {
-                    Text("Voulez-vous vraiment supprimer cet exercice ?")
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        exerciseToDelete?.let { vm.send(ListExercisesViewModel.UIEvent.OnDelete(it)) }
-                        exerciseToDelete = null
-                    }) {
-                        Text("Supprimer")
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { exerciseToDelete = null }) {
-                        Text("Annuler")
-                    }
-                }
-            )
-        }
+        // ✅ Boutons "Ajouter" et "Tout supprimer" RESTENT visibles
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+        ) {
+            Button(
+                onClick = { navigator.navigate(CreateExerciseScreenDestination) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF5E35B1),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Ajouter")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Ajouter")
+            }
 
-        // Popup de confirmation
-        if (showDeleteAllDialog) {
-            AlertDialog(
-                onDismissRequest = { showDeleteAllDialog = false },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            vm.deleteAllExercises()
-                            Toast.makeText(context, "Tous les exercices ont été supprimés", Toast.LENGTH_SHORT).show()
-                            showDeleteAllDialog = false
-                        }
-                    ) {
-                        Text("Oui")
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { showDeleteAllDialog = false }) {
-                        Text("Non")
-                    }
-                },
-                title = { Text("Confirmation") },
-                text = { Text("Êtes-vous sûr de vouloir supprimer tous les exercices ?") }
-            )
+            Button(
+                onClick = { showDeleteAllDialog = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFD32F2F),
+                    contentColor = Color.White
+                ),
+                enabled = !isExerciseListEmpty, // ✅ Désactivation propre si la liste est vide
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Delete, contentDescription = "Tout supprimer")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Tout supprimer")
+            }
         }
+    }
+
+    // ✅ Popup confirmation suppression d'un exercice
+    if (exerciseToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { exerciseToDelete = null },
+            title = { Text("❗ Confirmer la suppression") },
+            text = { Text("Voulez-vous vraiment supprimer cet exercice ?") },
+            confirmButton = {
+                Button(onClick = {
+                    exerciseToDelete?.let { vm.send(ListExercisesViewModel.UIEvent.OnDelete(it)) }
+                    exerciseToDelete = null
+                }) { Text("Supprimer") }
+            },
+            dismissButton = {
+                Button(onClick = { exerciseToDelete = null }) { Text("Annuler") }
+            }
+        )
+    }
+
+    // ✅ Popup confirmation suppression de tous les exercices
+    if (showDeleteAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAllDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        vm.deleteAllExercises()
+                        Toast.makeText(context, "Tous les exercices ont été supprimés", Toast.LENGTH_SHORT).show()
+                        showDeleteAllDialog = false
+                    }
+                ) { Text("Oui") }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteAllDialog = false }) { Text("Non") }
+            },
+            title = { Text("Confirmation") },
+            text = { Text("Êtes-vous sûr de vouloir supprimer tous les exercices ?") }
+        )
     }
 }
 
@@ -272,80 +275,94 @@ fun ExerciseItem(
     onEdit: (Exercise) -> Unit,
     onDelete: (Exercise) -> Unit,
     isEven: Boolean
-
 ) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp) // Ajout de padding externe
-            .shadow(8.dp, shape = MaterialTheme.shapes.medium) // Ajout d'ombre
-            .background(
-                if (isEven) Color(0xFFF5F5DC) else Color.White, // Alterne les couleurs du conteneur
-                shape = MaterialTheme.shapes.medium
-            )
-            .border(1.dp, Color.Gray, shape = MaterialTheme.shapes.medium), // Contours pour tout l'exercice
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = if (isEven) Color(0xFFF5F5DC) else Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        // Informations sur l'exercice
-        Column(
-            modifier = Modifier.weight(1f).padding(8.dp) // Ajout de padding interne
-        ) {
-            Text(
-                text = "${exercise.name} - ${exercise.duration} min",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Text(
-                text = exercise.description,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Light
-            )
-        }
-
-        // Nombre de répétitions
-        Text(
-            text = "${exercise.repetitions}x",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .size(48.dp),
-            color = Color.Black
-        )
-
-        // Boutons Modifier et Supprimer
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Bouton Modifier (vert)
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(Color.Green, shape = MaterialTheme.shapes.small)
-                    .clickable { onEdit(exercise) },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Modifier",
-                    tint = Color.White
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "🏋️ ${exercise.name}",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF673AB7)
                 )
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "📝 Description:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = exercise.description,
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.weight(2f)
+                    )
+                }
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "⏳ Durée:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "${exercise.duration} min",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.weight(2f)
+                    )
+                }
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "🔄 Répétitions:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "${exercise.repetitions}x",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.weight(2f)
+                    )
+                }
             }
 
-            // Bouton Supprimer (rouge)
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(Color.Red, shape = MaterialTheme.shapes.small)
-                    .clickable { onDelete(exercise) },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Supprimer",
-                    tint = Color.White
-                )
+            Row {
+                IconButton(onClick = { onEdit(exercise) }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Modifier",
+                        tint = Color.Green
+                    )
+                }
+
+                IconButton(onClick = { onDelete(exercise) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Supprimer",
+                        tint = Color.Red
+                    )
+                }
             }
         }
     }

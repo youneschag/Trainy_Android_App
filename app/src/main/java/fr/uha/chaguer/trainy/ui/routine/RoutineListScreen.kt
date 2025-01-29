@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -37,9 +38,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.CreateExerciseScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RoutineDetailsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.CreateRoutineScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.EditRoutineScreenDestination
@@ -51,12 +58,12 @@ import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Routine
+import fr.uha.chaguer.trainy.ui.theme.MontserratFont
 import okhttp3.internal.format
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
 fun RoutineListScreen(
@@ -69,132 +76,159 @@ fun RoutineListScreen(
     val fullRoutines by vm.getAllFullRoutines().collectAsStateWithLifecycle(emptyList())
     val expandedRoutines = remember { mutableStateMapOf<Long, Boolean>() }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.list_routine), style = MaterialTheme.typography.titleLarge) }
-            )
-        },
-        bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                // Bouton Ajouter
-                Button(
-                    onClick = { navigator.navigate(CreateRoutineScreenDestination) },
-                    modifier = Modifier
-                        .weight(1f) // Prend 50 % de la largeur
-                        .fillMaxWidth()
-                        .shadow(4.dp, shape = MaterialTheme.shapes.medium),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(Icons.Filled.Add, contentDescription = null)
-                    Text(text = "Ajouter", modifier = Modifier.padding(start = 8.dp))
-                }
-
-                // Bouton Supprimer tout
-                Button(
-                    onClick = { showDeleteAllDialog = true },
-                    modifier = Modifier
-                        .weight(1f) // Prend 50 % de la largeur
-                        .fillMaxWidth()
-                        .shadow(4.dp, shape = MaterialTheme.shapes.medium),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(Icons.Filled.Delete, contentDescription = null)
-                    Text(text = "Tout supprimer", modifier = Modifier.padding(start = 8.dp))
-                }
-            }
-        }
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(16.dp)
+    ) {
+        // ✅ Titre et barre violette
         Column(
-            modifier = Modifier.padding(innerPadding)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            StateScreen(state = uiState) { content ->
-                if (content.routines.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Aucune routine n'est disponible pour l'instant.",
-                            fontSize = 16.sp
-                        )
-                    }
-                } else {
-                    SuccessListRoutinesScreen(
-                        fullRoutines = fullRoutines,
-                        navigator = navigator,
-                        expandedRoutines = expandedRoutines,
-                        onDeleteRequest = { routine ->
-                            routineToDelete = routine // Déclenche la popup de confirmation
-                        },
-                        onEditRequest = { routine ->
-                            navigator.navigate(EditRoutineScreenDestination(routine.routineId))
-                        },
-                        onAddExercise = { routineId ->
-                            navigator.navigate(RoutineDetailsScreenDestination(routineId = routineId))
-                        },
-                        removeExerciseFromRoutine = { routineId, exerciseId ->
-                            vm.removeExerciseFromRoutine(routineId, exerciseId)
-                        }
+            Text(
+                text = stringResource(R.string.list_routine),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = MontserratFont
+            )
+            Divider(
+                color = Color(0xFF673AB7),
+                thickness = 2.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+
+        var isRoutineListEmpty by remember { mutableStateOf(true) } // État pour vérifier si la liste est vide
+
+        StateScreen(state = uiState) { content ->
+            isRoutineListEmpty = content.routines.isEmpty() // Mise à jour de l'état
+
+            if (content.routines.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Aucune routine disponible",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
                     )
+                }
+            } else {
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    itemsIndexed(
+                        items = fullRoutines,
+                        key = { _, fullRoutine -> fullRoutine.routine.routineId } // Clé unique
+                    ) { index, fullRoutine ->
+                        val isExpanded = expandedRoutines[fullRoutine.routine.routineId] == true
+
+                        SwipeableItem(
+                            modifier = Modifier.padding(8.dp),
+                            onDelete = { routineToDelete = fullRoutine.routine },
+                            onEdit = { navigator.navigate(EditRoutineScreenDestination(fullRoutine.routine.routineId)) }
+                        ) {
+                            RoutineItem(
+                                fullRoutine = fullRoutine,
+                                isExpanded = isExpanded,
+                                onExpandToggle = {
+                                    expandedRoutines[fullRoutine.routine.routineId] = !isExpanded
+                                },
+                                onAddExercise = { navigator.navigate(RoutineDetailsScreenDestination(fullRoutine.routine.routineId)) },
+                                onRemoveExercise = { exerciseId ->
+                                    vm.removeExerciseFromRoutine(fullRoutine.routine.routineId, exerciseId)
+                                },
+                                isEven = index % 2 == 0
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // Boîte de dialogue de confirmation pour suppression
-        if (routineToDelete != null) {
-            AlertDialog(
-                onDismissRequest = { routineToDelete = null },
-                title = { Text("Confirmer la suppression") },
-                text = { Text("Voulez-vous vraiment supprimer cette routine ?") },
-                confirmButton = {
-                    Button(onClick = {
-                        routineToDelete?.let { vm.send(ListRoutinesViewModel.UIEvent.OnDelete(it)) }
-                        routineToDelete = null
-                    }) {
-                        Text("Supprimer")
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { routineToDelete = null }) {
-                        Text("Annuler")
-                    }
-                }
-            )
-        }
+        // ✅ Boutons "Ajouter" et "Tout supprimer" RESTENT visibles
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+        ) {
+            Button(
+                onClick = { navigator.navigate(CreateRoutineScreenDestination) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF5E35B1),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Ajouter")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Ajouter")
+            }
 
-        // Boîte de dialogue de confirmation pour supprimer toutes les routines
-        if (showDeleteAllDialog) {
-            AlertDialog(
-                onDismissRequest = { showDeleteAllDialog = false },
-                confirmButton = {
-                    Button(onClick = {
-                        vm.deleteAllRoutines()
-                        showDeleteAllDialog = false
-                    }) {
-                        Text("Oui")
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { showDeleteAllDialog = false }) {
-                        Text("Non")
-                    }
-                },
-                title = { Text("Confirmation") },
-                text = { Text("Êtes-vous sûr de vouloir supprimer toutes les routines ?") }
-            )
+            Button(
+                onClick = { showDeleteAllDialog = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFD32F2F),
+                    contentColor = Color.White
+                ),
+                enabled = !isRoutineListEmpty, // ✅ Désactivation propre si la liste est vide
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Delete, contentDescription = "Tout supprimer")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Tout supprimer")
+            }
         }
+    }
+
+    // Boîte de dialogue de confirmation pour suppression
+    if (routineToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { routineToDelete = null },
+            title = { Text("❗Confirmer la suppression") },
+            text = { Text("Voulez-vous vraiment supprimer cette routine ?") },
+            confirmButton = {
+                Button(onClick = {
+                    routineToDelete?.let { vm.send(ListRoutinesViewModel.UIEvent.OnDelete(it)) }
+                    routineToDelete = null
+                }) {
+                    Text("Supprimer")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { routineToDelete = null }) {
+                    Text("Annuler")
+                }
+            }
+        )
+    }
+
+    // Boîte de dialogue de confirmation pour supprimer toutes les routines
+    if (showDeleteAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAllDialog = false },
+            confirmButton = {
+                Button(onClick = {
+                    vm.deleteAllRoutines()
+                    showDeleteAllDialog = false
+                }) {
+                    Text("Oui")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteAllDialog = false }) {
+                    Text("Non")
+                }
+            },
+            title = { Text("Confirmation") },
+            text = { Text("Êtes-vous sûr de vouloir supprimer toutes les routines ?") }
+        )
     }
 }
 
@@ -255,21 +289,20 @@ fun RoutineItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .shadow(8.dp, shape = MaterialTheme.shapes.medium) // Ajout d'ombre
+            .shadow(8.dp, shape = MaterialTheme.shapes.medium)
             .background(
-                if (isEven) Color(0xFFF5F5DC) else Color.White, // Alterne les couleurs du conteneur
+                if (isEven) Color(0xFFF5F5DC) else Color.White,
                 shape = MaterialTheme.shapes.medium
             )
             .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
-            .padding(8.dp)
+            .padding(12.dp)
     ) {
-        // Header with routine name and expand toggle
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = fullRoutine.routine.name,
+                text = "📌 ${fullRoutine.routine.name}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -282,19 +315,23 @@ fun RoutineItem(
             }
         }
 
-        // Routine details
-        Text(
-            text = "Objectif: ${fullRoutine.routine.objective}",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            text = "Fréquence: ${fullRoutine.routine.frequency} fois/semaine",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            text = "Début: ${formatDate(fullRoutine.routine.startDay)}",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Icon(imageVector = Icons.Default.FitnessCenter, contentDescription = null, tint = Color(0xFF673AB7))
+            Text(text = " Objectif :", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            Text(text = fullRoutine.routine.objective, modifier = Modifier.padding(start = 8.dp))
+        }
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Icon(imageVector = Icons.Default.Timer, contentDescription = null, tint = Color(0xFF673AB7))
+            Text(text = " Fréquence :", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            Text(text = "${fullRoutine.routine.frequency} fois/semaine", modifier = Modifier.padding(start = 8.dp))
+        }
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Icon(imageVector = Icons.Default.List, contentDescription = null, tint = Color(0xFF673AB7))
+            Text(text = " Début :", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            Text(text = formatDate(fullRoutine.routine.startDay), modifier = Modifier.padding(start = 8.dp))
+        }
 
         // Show exercises if expanded
         if (isExpanded) {
@@ -343,30 +380,77 @@ fun ExerciseItem(
             .shadow(4.dp, shape = MaterialTheme.shapes.medium)
             .background(Color(0xFFF0F0F0), shape = MaterialTheme.shapes.medium)
             .border(1.dp, Color.Gray, shape = MaterialTheme.shapes.medium)
-            .padding(8.dp),
+            .padding(12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = exercise.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Durée: ${exercise.duration} minutes",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = "Répétitions: ${exercise.repetitions}",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = "Description: ${exercise.description}",
-                style = MaterialTheme.typography.bodySmall
-            )
+            // ✅ Nom de l'exercice avec une icône
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.FitnessCenter, contentDescription = "Nom", tint = Color(0xFF673AB7))
+                Text(
+                    text = " ${exercise.name}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // ✅ Description avec icône + texte souligné et gras
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.List, contentDescription = "Description", tint = Color(0xFF673AB7))
+                Text(
+                    text = " Description :",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
+                    color = Color.DarkGray,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Text(
+                    text = " ${exercise.description}",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+
+            // ✅ Durée avec icône + texte souligné et gras
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.Timer, contentDescription = "Durée", tint = Color(0xFF673AB7))
+                Text(
+                    text = " Durée :",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
+                    color = Color.DarkGray,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Text(
+                    text = " ${exercise.duration} minutes",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+
+            // ✅ Répétitions avec icône + texte souligné et gras
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Default.Repeat, contentDescription = "Répétitions", tint = Color(0xFF673AB7))
+                Text(
+                    text = " Répétitions :",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
+                    color = Color.DarkGray,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Text(
+                    text = " ${exercise.repetitions}x",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
         }
 
+        // ✅ Bouton de suppression
         IconButton(
             onClick = onRemove,
             modifier = Modifier.padding(start = 8.dp)

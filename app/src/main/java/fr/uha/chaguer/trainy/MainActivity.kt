@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -21,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
@@ -41,40 +44,28 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = {
+                    Column {
+                        // ✅ TopAppBar avec menu déroulant
+                        TopAppBar(
+                            title = {
+                                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.trainy),
+                                        contentDescription = "Logo Trainy",
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.padding(end = 8.dp)
+                                    )
                                     Text(
                                         text = "Trainy",
-                                        color = Color.White // Titre en blanc
+                                        color = Color.White
                                     )
-                                },
-                                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                                    containerColor = Color(0xFF673AB7) // Violet pour la barre
-                                ),
-                                actions = {
-                                    IconButton(onClick = { /* On traitera l'action plus tard */ }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Settings, // Icône de paramètres
-                                            contentDescription = "Paramètres",
-                                            tint = Color.White // Couleur blanche pour l'icône
-                                        )
-                                    }
                                 }
+                            },
+                            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                                containerColor = Color(0xFF673AB7) // Violet
                             )
-                        }
-                    ) { innerPadding ->
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(
-                                    top = innerPadding.calculateTopPadding() - 50.dp, // Réduit l'espace en haut
-                                    bottom = 0.dp // Supprime l’espace blanc sous la Bottom Bar
-                                )
-                        ) {
-                            TrainyAppScreen()
-                        }
+                        )
+                        TrainyAppScreen()
                     }
                 }
             }

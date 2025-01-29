@@ -14,7 +14,7 @@
     <string name="exercise_list">Exercices associés</string>
     <string name="progress_tracking">Suivi des performances</string>
     <string name="settings_screen">Paramètres</string>
-    <string name="list_exercise">Exercices</string>
+    <string name="list_exercise">📋 Liste des Exercices</string>
     <string name="create_exercise">Créer un exercice</string>
     <string name="value_empty">Le champ ne peut pas être vide</string>
     <string name="value_blank">Le champ ne peut pas contenir uniquement des espaces</string>
@@ -32,7 +32,7 @@
     <string name="edit_exercise">Modifier un exercice</string>
     <string name="create_routine">Créer une routine</string>
     <string name="edit_routine">Modifier une routine</string>
-    <string name="list_routine">Routines</string>
+    <string name="list_routine">📋 Liste des Routines</string>
     <string name="add_routine">Ajouter une routine</string>
     <string name="exercise_name">Exercise Name</string>
     <string name="exercise_description">Exercise Description</string>
