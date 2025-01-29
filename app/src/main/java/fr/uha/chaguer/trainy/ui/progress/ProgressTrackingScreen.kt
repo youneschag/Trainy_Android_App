@@ -179,10 +179,10 @@ fun calculateDifferenceMessage(exercise: Exercise, progress: RoutineProgress?): 
     val completedRepetitions = progress?.completedRepetitions ?: 0
     val completedDuration = progress?.completedDuration ?: 0
 
-    val remainingRepetitions = exercise.repetitions - completedRepetitions
-    val remainingDuration = exercise.duration - completedDuration
+    val remainingRepetitions = (exercise.repetitions - completedRepetitions).coerceAtLeast(0)
+    val remainingDuration = (exercise.duration - completedDuration).coerceAtLeast(0)
 
-    return if (remainingRepetitions <= 0 && remainingDuration <= 0) {
+    return if (remainingRepetitions == 0 && remainingDuration == 0) {
         "Exercice terminé !"
     } else {
         "Il reste $remainingRepetitions répétitions et $remainingDuration minutes."

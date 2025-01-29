@@ -7,9 +7,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/trainy"
+        android:icon="@mipmap/ic_trainy"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/trainy"
+        android:roundIcon="@mipmap/ic_trainy_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Trainy"
         tools:targetApi="34">

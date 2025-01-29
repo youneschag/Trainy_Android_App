@@ -44,28 +44,39 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Column {
-                        // ✅ TopAppBar avec menu déroulant
-                        TopAppBar(
-                            title = {
-                                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.trainy),
-                                        contentDescription = "Logo Trainy",
-                                        tint = Color.Unspecified,
-                                        modifier = Modifier.padding(end = 8.dp)
-                                    )
-                                    Text(
-                                        text = "Trainy",
-                                        color = Color.White
-                                    )
-                                }
-                            },
-                            colors = TopAppBarDefaults.mediumTopAppBarColors(
-                                containerColor = Color(0xFF673AB7) // Violet
+                    Scaffold(
+                        topBar = {
+                            TopAppBar(
+                                title = {
+                                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.trainy),
+                                            contentDescription = "Logo Trainy",
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                        Text(
+                                            text = "Trainy",
+                                            color = Color.White
+                                        )
+                                    }
+                                },
+                                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                                    containerColor = Color(0xFF673AB7) // Violet
+                                )
                             )
-                        )
-                        TrainyAppScreen()
+                        }
+                    ) { innerPadding ->
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(
+                                    top = innerPadding.calculateTopPadding() - 50.dp, // Réduit l'espace en haut
+                                    bottom = 0.dp // Supprime l’espace blanc sous la Bottom Bar
+                                )
+                        ) {
+                            TrainyAppScreen()
+                        }
                     }
                 }
             }

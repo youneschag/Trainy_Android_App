@@ -12,4 +12,5 @@
     <color name="tertiary">#8E24AA</color>
     <color name="background">#F5F5F5</color>
     <color name="status_bar">#311B92</color>
+    <color name="purple_primary">#673AB7</color>
 </resources>

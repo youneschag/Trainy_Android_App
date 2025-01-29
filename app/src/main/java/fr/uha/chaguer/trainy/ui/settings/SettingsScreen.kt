@@ -1,12 +1,23 @@
 package fr.uha.chaguer.trainy.ui.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -16,6 +27,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.android.ui.app.AppTopBar
 import fr.uha.chaguer.android.ui.app.UITitleState
 import fr.uha.chaguer.trainy.R
+import fr.uha.chaguer.trainy.ui.theme.MontserratFont
 
 @Destination<RootGraph>
 @Composable
@@ -23,22 +35,38 @@ fun SettingsScreen (
     vm : SettingsViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
-    Scaffold (
-        topBar = { AppTopBar(UITitleState(screenNameId = R.string.settings)) },
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(16.dp)
+    ){
         Column(
-            modifier = Modifier.padding(innerPadding)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Button(
-                onClick = { vm.onClear() }
-            ) {
-                Text("Clear")
-            }
-            Button(
-                onClick = { vm.onFill() }
-            ) {
-                Text("Fill")
-            }
+            Text(
+                text = stringResource(R.string.settings),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = MontserratFont
+            )
+            Divider(
+                color = Color(0xFF673AB7),
+                thickness = 2.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+        Button(
+            onClick = { vm.onClear() }
+        ) {
+            Text("Clear")
+        }
+        Button(
+            onClick = { vm.onFill() }
+        ) {
+            Text("Fill")
         }
     }
 }
