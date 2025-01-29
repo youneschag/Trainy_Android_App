@@ -37,13 +37,17 @@ fun SwipeableItem(
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
             when (it) {
+
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    if (onEdit != null) onEdit()
+                    if (onEdit != null)
+                        onEdit()
                 }
                 SwipeToDismissBoxValue.EndToStart -> {
-                    if (onDelete != null) onDelete()
+                    if (onDelete != null)
+                        onDelete()
                 }
-                SwipeToDismissBoxValue.Settled -> { }
+                SwipeToDismissBoxValue.Settled -> {
+                }
             }
             false
         }
@@ -58,7 +62,6 @@ fun SwipeableItem(
             val direction = dismissState.dismissDirection ?: return@SwipeToDismissBox
             if (onEdit == null && direction == SwipeToDismissBoxValue.StartToEnd) return@SwipeToDismissBox
             if (onDelete == null && direction == SwipeToDismissBoxValue.EndToStart) return@SwipeToDismissBox
-
             val color by animateColorAsState(
                 targetValue = when (dismissState.targetValue) {
                     SwipeToDismissBoxValue.Settled -> Color.White
@@ -84,7 +87,7 @@ fun SwipeableItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color)
-                    .padding(horizontal = 12.dp),
+                    .padding(start = 12.dp, end = 12.dp),
                 contentAlignment = alignment
             ) {
                 Icon(icon, contentDescription = null, modifier = Modifier.scale(scale))

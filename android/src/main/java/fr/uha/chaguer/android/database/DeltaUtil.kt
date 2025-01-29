@@ -23,18 +23,16 @@ abstract class DeltaUtil<X, Y> {
         val initial = convert(left)
         val next = convert(right)
         for (id in next.keys) {
-            if (!initial.containsKey(id)) {
-                toAdd.add(createFor(next[id]!!))
-            }
+            if (!initial.containsKey(id)) toAdd.add(createFor(next[id]!!))
         }
         for (id in initial.keys) {
-            if (!next.containsKey(id)) {
-                toRemove.add(createFor(initial[id]!!))
-            }
+            if (!next.containsKey(id)) toRemove.add(createFor(initial[id]!!))
         }
         for (id in next.keys) {
-            if (initial.containsKey(id) && !same(initial[id]!!, next[id]!!)) {
-                toUpdate.add(createFor(next[id]!!))
+            if (initial.containsKey(id)) {
+                if (!same(initial[id]!!, next[id]!!)) {
+                    toUpdate.add(createFor(next[id]!!))
+                }
             }
         }
     }
@@ -42,4 +40,5 @@ abstract class DeltaUtil<X, Y> {
     protected abstract fun getId(input: X): Long
     protected abstract fun same(initial: X, now: X): Boolean
     protected abstract fun createFor(input: X): Y
+
 }

@@ -39,13 +39,21 @@
     <string name="exercise_duration">Exercise Duration (minutes)</string>
     <string name="exercise_repetitions">Exercise Repetitions</string>
     <string name="routine_name">Nom de la routine</string>
-    <string name="routine_objective">Objectif</string>
-    <string name="routine_frequency">Fréquence</string>
-    <string name="routine_start_day">Date de début</string>
+    <string name="routine_objective">🎯 Objectif:</string>
+    <string name="routine_frequency">🔄 Fréquence:</string>
+    <string name="routine_start_day">📅 Début:</string>
     <string name="name">Nom</string>
     <string name="start_date">Date de début</string>
     <string name="frequency">Fréquence</string>
     <string name="objectives">Objectifs</string>
     <string name="no_exercises_message">Aucun exercice pour l\'instant</string>
     <string name="add_exercise">Ajouter</string>
+    <string name="titre_routine">🔥 Routines 🔥</string>
+    <string name="titre_exercise">💪 Exercices 💪</string>
+    <string name="no_routine">Aucune routine enregistrée</string>
+    <string name="no_exercise">Aucun exercice pour l\'instant</string>
+    <string name="see_more">🔍 Voir plus</string>
+    <string name="description">📝 Description:</string>
+    <string name="duration">⏳ Durée:</string>
+    <string name="repetitions">🔄 Répétitions:</string>
 </resources>

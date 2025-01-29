@@ -13,9 +13,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 
+/*
+   rules to load the source of an Icon
+   it can be :
+      an id of a resource file either drawable (SVG) or mipmap (PNG)
+      a vectorImage (SVG in Kotlin)
+      a bitmap (screenshot)
+      an Uri (file from Camera)
+   tint can be used to force color or a tint is computed according the selected state
+ */
 data class IconPicture (
     @DrawableRes
     val id : Int?  = null,

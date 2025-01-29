@@ -169,11 +169,11 @@ fun OutlinedRadioGroup (
         hintId = hintId,
     ) {
         val entries = itemValues.mapIndexed { index, item -> RadioButtonEntry(
-            label = itemLabels?.let { itemLabels[index] },
-            icon = itemIcons?.let { itemIcons[index] },
-            iconFocused = itemIconsFocused?.let { itemIconsFocused[index] },
-            value = item
-        )
+                label = itemLabels?.let { itemLabels[index] },
+                icon = itemIcons?.let { itemIcons[index] },
+                iconFocused = itemIconsFocused?.let { itemIconsFocused[index] },
+                value = item
+            )
         }
         InternalRadioGroupContent(
             selected = selected,

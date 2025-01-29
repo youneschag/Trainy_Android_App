@@ -3,7 +3,10 @@ package fr.uha.chaguer.android.ui
 import fr.uha.chaguer.android.ui.field.Time
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
+import java.util.Locale
 
 class Converter {
 
@@ -93,4 +96,5 @@ class Converter {
         }
 
     }
+
 }

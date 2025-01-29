@@ -64,20 +64,4 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
-
-    // Exemple pour ajouter un nouvel exercice si nécessaire
-    fun addExercise(exercise: Exercise) {
-        viewModelScope.launch {
-            exerciseRepository.createExercise(exercise)
-            fetchAllExercises() // Rafraîchir les données
-        }
-    }
-
-    // Exemple pour ajouter une routine si nécessaire
-    fun addRoutine(routine: Routine) {
-        viewModelScope.launch {
-            routineRepository.create(routine)
-            fetchAllRoutines() // Rafraîchir les données
-        }
-    }
 }

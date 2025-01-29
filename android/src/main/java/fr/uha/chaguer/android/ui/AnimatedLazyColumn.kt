@@ -13,15 +13,14 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 
-/**
- * An animated LazyListScope extension for items.
- * Adds fade-in animation for items as they become visible during scroll.
- *
- * @param items The list of items to display.
- * @param scrollState The LazyListState to track scrolling.
- * @param key Optional key for identifying items.
- * @param contentType Optional content type for each item.
- * @param itemContent The composable content for each item.
+/*
+ dark mode: start 0.5, end 0, color White
+ light mode: start 0.5, end 0, color Black
+ after I switch to onBackground instead color (alpha is applied so the invert color is better)
+ next 0.7 instead 0.5 more expressive
+ delay of 150 so the start is enough after the start of scroll so the cell is fully visible
+ duration of 750 seems enough
+ no way to pass the color in the background color of the modifier ... not able to extract it later
  */
 inline fun <T> LazyListScope.animatedItems(
     items: List<T>,
@@ -30,33 +29,27 @@ inline fun <T> LazyListScope.animatedItems(
     crossinline contentType: (index: Int, item: T) -> Any? = { _, _ -> null },
     crossinline itemContent: @Composable LazyItemScope.(item: T, backgroundColor: Color) -> Unit
 ) = itemsIndexed(
-    items = items,
-    key = if (key != null) { _: Int, item: T -> key(item) } else null,
-    contentType = contentType
-) { index, item ->
+        items = items,
+        key = if (key != null) { _: Int, item: T -> key(item) } else null,
+        contentType = contentType
+    ) { index, item ->
 
-    // Animatable for alpha
-    val animatableAlpha = remember { Animatable(0.7f) }
-
-    // Visibility check based on scroll state
-    val isVisible = remember {
-        derivedStateOf {
-            scrollState.firstVisibleItemIndex <= index
+        val animatableAlpha = remember { Animatable(.7f) }
+        val isVisible = remember {
+            derivedStateOf {
+                scrollState.firstVisibleItemIndex <= index
+            }
         }
-    }
 
-    // Animation trigger when the item becomes visible
-    LaunchedEffect(isVisible.value) {
-        if (isVisible.value) {
-            animatableAlpha.animateTo(
-                0f, animationSpec = tween(durationMillis = 850, delayMillis = 150)
-            )
+        LaunchedEffect(isVisible.value) {
+            if (isVisible.value) {
+                animatableAlpha.animateTo(
+                    0f, animationSpec = tween(durationMillis = 850, delayMillis = 150)
+                )
+            }
         }
+        itemContent(
+            item,
+            MaterialTheme.colorScheme.onBackground.copy(alpha = animatableAlpha.value)
+        )
     }
-
-    // Pass the calculated background color to the item's content
-    itemContent(
-        item,
-        MaterialTheme.colorScheme.onBackground.copy(alpha = animatableAlpha.value)
-    )
-}

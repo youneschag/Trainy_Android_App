@@ -40,10 +40,7 @@ fun OutlinedSpinnerField (
             modifier = modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
             label = { if (labelId != null) Text (text = stringResource(labelId)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            supportingText = { if (supportingTextId != null) androidx.compose.material3.Text(
-                stringResource(id = supportingTextId)
-            )
-            },
+            supportingText = { if (supportingTextId != null) Text(stringResource(id = supportingTextId)) },
             isError = errorId != null,
         )
         ExposedDropdownMenu(
@@ -52,7 +49,7 @@ fun OutlinedSpinnerField (
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { androidx.compose.material3.Text(option.first) },
+                    text = { Text(option.first) },
                     onClick = {
                         selectedOption = option
                         expanded = false

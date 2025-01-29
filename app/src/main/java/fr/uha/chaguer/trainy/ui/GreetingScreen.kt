@@ -42,6 +42,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ExerciseListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RoutineListScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import fr.uha.chaguer.android.database.DateUtils.formatDate
 import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.Routine
@@ -88,28 +89,27 @@ fun GreetingScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f), // Permet d'occuper l'espace restant
+                .weight(1f),
             verticalArrangement = Arrangement.Top
         ) {
-            // Section des routines
             item {
                 SectionCard(
-                    title = "🔥 Routines 🔥",
+                    title = stringResource(R.string.titre_routine),
                     items = routines.take(3),
-                    emptyMessage = "Aucune routine enregistrée",
+                    emptyMessage = stringResource(R.string.no_routine),
                     onSeeMore = { navigator.navigate(RoutineListScreenDestination) }
                 )
             }
+
             item {
                 Spacer(modifier = Modifier.padding(8.dp))
             }
 
-            // Section des exercices
             item {
                 SectionCard(
-                    title = "💪 Exercices 💪",
+                    title = stringResource(R.string.titre_exercise),
                     items = exercises.take(3),
-                    emptyMessage = "Aucun exercice pour l'instant.",
+                    emptyMessage = stringResource(R.string.no_exercise),
                     onSeeMore = { navigator.navigate(ExerciseListScreenDestination) }
                 )
             }
@@ -148,7 +148,7 @@ fun <T> SectionCard(
             } else {
                 items.forEach { item ->
                     SubCard(item = item)
-                    Spacer(modifier = Modifier.size(8.dp)) // Espacement entre les sous-cartes
+                    Spacer(modifier = Modifier.size(8.dp))
                 }
             }
             Row(
@@ -158,7 +158,7 @@ fun <T> SectionCard(
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(onClick = onSeeMore) {
-                    Text(text = "🔍 Voir plus")
+                    Text(text = stringResource(R.string.see_more))
                     Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
                 }
             }
@@ -188,7 +188,7 @@ fun <T> SubCard(item: T) {
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "📝 Description:",
+                            text = stringResource(R.string.description),
                             fontSize = 14.sp,
                             fontFamily = MontserratFont,
                             fontWeight = FontWeight.Bold,
@@ -206,7 +206,7 @@ fun <T> SubCard(item: T) {
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "⏳ Durée:",
+                            text = stringResource(R.string.duration),
                             fontSize = 14.sp,
                             fontFamily = MontserratFont,
                             fontWeight = FontWeight.Bold,
@@ -224,7 +224,7 @@ fun <T> SubCard(item: T) {
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "🔄 Répétitions:",
+                            text = stringResource(R.string.repetitions),
                             fontSize = 14.sp,
                             fontFamily = MontserratFont,
                             fontWeight = FontWeight.Bold,
@@ -252,7 +252,7 @@ fun <T> SubCard(item: T) {
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "🎯 Objectif:",
+                            text = stringResource(R.string.routine_objective),
                             fontSize = 14.sp,
                             fontFamily = MontserratFont,
                             fontWeight = FontWeight.Bold,
@@ -270,7 +270,7 @@ fun <T> SubCard(item: T) {
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "🔄 Fréquence:",
+                            text = stringResource(R.string.routine_frequency),
                             fontSize = 14.sp,
                             fontFamily = MontserratFont,
                             fontWeight = FontWeight.Bold,
@@ -288,7 +288,7 @@ fun <T> SubCard(item: T) {
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "📅 Début:",
+                            text = stringResource(R.string.routine_start_day),
                             fontSize = 14.sp,
                             fontFamily = MontserratFont,
                             fontWeight = FontWeight.Bold,
@@ -311,9 +311,4 @@ fun <T> SubCard(item: T) {
             }
         }
     }
-}
-
-fun formatDate(date: Date): String {
-    val formatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    return formatter.format(date)
 }

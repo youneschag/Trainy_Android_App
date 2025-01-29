@@ -14,27 +14,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-private class CheckboxEntry(
-    val label: String? = null,
+private class CheckboxEntry (
+    val label : String? = null,
     val icon: ImageVector? = null,
     val iconFocused: ImageVector? = null,
-    val value: Int
+    val value : Int
 )
 
+@Suppress("KotlinConstantConditions")
 @Composable
-private fun InternalCheckboxContent(
+private fun InternalOutlinedCheckboxContent (
     onSelectedChanged: (Boolean, Int) -> Unit,
-    entry: CheckboxEntry,
+    entry : CheckboxEntry,
     modifier: Modifier = Modifier,
-    selectedValue: Int
+    selectedValue: Int,
 ) {
-    val selected = (entry.value and selectedValue) != 0
-    val background = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else Color.Transparent
+    val selected = ((entry.value and selectedValue) != 0)
+    val background =
+        if (entry.icon == null && entry.iconFocused != null && selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else Color.Transparent
+    val contentColor =
+        if (entry.icon == null && entry.iconFocused != null && selected) Color.White else MaterialTheme.colorScheme.onBackground
 
-    Row(
+    Row (
         modifier = modifier
             .selectable(
                 selected = selected,
@@ -43,105 +46,206 @@ private fun InternalCheckboxContent(
             .background(background),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (entry.icon != null) {
-            Icon(
-                painter = rememberVectorPainter(entry.icon),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            )
+        when {
+            entry.icon != null && entry.iconFocused != null -> {
+                IconToggleButton(
+                    checked = selected,
+                    onCheckedChange = { onSelectedChanged(selected, entry.value) }
+                ) {
+                    Icon(
+                        painter = rememberVectorPainter(
+                            if (selected) entry.iconFocused else entry.icon
+                        ),
+                        contentDescription = null,
+                        tint = contentColor,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            }
+
+            entry.icon != null && entry.iconFocused == null -> {
+                Checkbox(
+                    checked = selected,
+                    onCheckedChange = { onSelectedChanged(selected, entry.value) }
+                )
+                Icon(
+                    painter = rememberVectorPainter(entry.icon),
+                    contentDescription = null,
+                    tint = contentColor
+                )
+            }
+
+            entry.icon == null && entry.iconFocused != null -> {
+                Icon(
+                    painter = rememberVectorPainter(entry.iconFocused),
+                    contentDescription = null,
+                    tint = contentColor,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+
+            entry.icon == null && entry.iconFocused == null -> {
+                Checkbox(
+                    checked = selected,
+                    onCheckedChange = { onSelectedChanged(selected, entry.value) }
+                )
+            }
         }
-        entry.label?.let {
+        if (entry.label != null) {
             Text(
-                text = it,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(start = 8.dp)
+                text = entry.label,
+                color = contentColor,
+//                modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
     }
 }
 
 @Composable
-private fun InternalCheckboxGroup(
-    entries: List<CheckboxEntry>,
+private fun InternalOutlinedCheckboxContent (
+    entries : List<CheckboxEntry>,
     onChanged: (Boolean, Int) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier : Modifier = Modifier,
     selected: Int,
-    orientation: Orientation = Orientation.VERTICAL
+    orientation : Orientation = Orientation.NO,
 ) {
-    when (orientation) {
-        Orientation.HORIZONTAL -> Row(modifier = modifier) {
-            entries.forEach { entry -> InternalCheckboxContent(onChanged, entry, Modifier.padding(8.dp), selected) }
-        }
-        Orientation.VERTICAL -> Column(modifier = modifier) {
-            entries.forEach { entry -> InternalCheckboxContent(onChanged, entry, Modifier.padding(8.dp), selected) }
-        }
-        Orientation.GRID2 -> LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = modifier) {
-            items(entries) { entry ->
-                InternalCheckboxContent(onChanged, entry, Modifier.padding(8.dp), selected)
+    val finalOrientation = when(orientation) {
+        Orientation.NO -> orientation
+        Orientation.HORIZONTAL -> orientation
+        Orientation.VERTICAL -> orientation
+        Orientation.OPTIMUM -> Orientation.VERTICAL
+        Orientation.GRID2 -> orientation
+        Orientation.GRID3 -> orientation
+    }
+    when(finalOrientation) {
+        Orientation.HORIZONTAL ->
+            Row(modifier = modifier.padding(top = 4.dp)) {
+                entries.forEach { entry -> InternalOutlinedCheckboxContent(onChanged, entry, modifier, selected) }
             }
-        }
-        Orientation.GRID3 -> LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = modifier) {
-            items(entries) { entry ->
-                InternalCheckboxContent(onChanged, entry, Modifier.padding(8.dp), selected)
+        Orientation.VERTICAL ->
+            Column(modifier = modifier.padding(top = 0.dp)) {
+                entries.forEach { entry -> InternalOutlinedCheckboxContent(onChanged, entry, modifier, selected) }
             }
-        }
+        Orientation.GRID2 ->
+            LazyVerticalGrid(
+                modifier = Modifier.height(120.dp),
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                items(entries) { item ->
+                    InternalOutlinedCheckboxContent (onChanged, item, modifier = modifier.size(24.dp), selected)
+                }
+            }
+        Orientation.GRID3 ->
+            LazyVerticalGrid(
+                modifier = Modifier.height(120.dp),
+                columns = GridCells.Fixed(3),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                items(entries) { item ->
+                    InternalOutlinedCheckboxContent (onChanged, item, modifier = modifier.size(24.dp), selected)
+                }
+            }
         else -> {}
     }
 }
 
+private fun toggle (how : Boolean, newValue: Int, previous: Int) : Int {
+    return if (how) previous and newValue.inv() else previous or newValue
+}
+
 @Composable
-fun OutlinedCheckboxGroup(
-    value: Int?,
-    onValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    orientation: Orientation = Orientation.VERTICAL,
+private fun InternalOutlinedCheckboxGroup (
+    value: Int,
+    onChanged: (Int) -> Unit,
+    modifier : Modifier = Modifier,
+    orientation : Orientation = Orientation.NO,
     @StringRes labelId: Int? = null,
-    itemValues: Array<Int>,
-    itemLabels: Array<String>? = null,
-    itemIcons: Array<ImageVector>? = null
+    @StringRes errorId : Int? = null,
+    @StringRes hintId : Int? = null,
+    itemValues : Array<Int>,
+    itemLabels : Array<String>? = null,
+    itemIcons : Array<ImageVector>? = null,
+    itemIconsFocused : Array<ImageVector>? = null
 ) {
-    val entries = itemValues.mapIndexed { index, item ->
-        CheckboxEntry(
-            label = itemLabels?.getOrNull(index),
-            icon = itemIcons?.getOrNull(index),
-            value = item
-        )
-    }
-    Column(modifier = modifier.padding(8.dp)) {
-        labelId?.let {
-            Text(
-                text = stringResource(id = it),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 4.dp)
+    OutlinedDecorator(
+        modifier = modifier,
+        labelId = labelId,
+        errorId = errorId,
+        hintId = hintId,
+    ) {
+        val entries = itemValues.mapIndexed { index, item ->
+            CheckboxEntry(
+                label = itemLabels?.let { itemLabels[index] },
+                icon = itemIcons?.let { itemIcons[index] },
+                iconFocused = itemIconsFocused?.let { itemIconsFocused[index] },
+                value = item
             )
         }
-        InternalCheckboxGroup(entries, { isSelected, newValue ->
-            val updatedValue = if (isSelected) value ?: 0 and newValue.inv() else value ?: 0 or newValue
-            onValueChange(updatedValue)
-        }, selected = value ?: 0, orientation = orientation)
+        InternalOutlinedCheckboxContent(
+            selected = value,
+            onChanged = { how : Boolean, newValue : Int -> onChanged(toggle (how, newValue, value)) },
+            orientation = orientation,
+            entries = entries,
+        )
     }
 }
 
 @Composable
-fun OutlinedBitCheckboxWrapper(
-    field: FieldWrapper<Int>,
-    onValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    orientation: Orientation = Orientation.VERTICAL,
-    @StringRes labelId: Int? = null,
-    itemValues: Array<Int>,
-    itemLabels: Array<String>? = null,
-    itemIcons: Array<ImageVector>? = null
+fun OutlinedCheckboxGroup (
+    value : Int?,
+    onValueChange : (Int) -> Unit,
+    modifier : Modifier = Modifier,
+    orientation : Orientation = Orientation.NO,
+    @StringRes labelId : Int? = null,
+    @StringRes errorId : Int? = null,
+    @StringRes hintId : Int? = null,
+    itemValues : Array<Int>,
+    itemLabels : Array<String>? = null,
+    itemIcons : Array<ImageVector>? = null,
+    itemIconsFocused : Array<ImageVector>? = null
 ) {
-    OutlinedCheckboxGroup(
-        value = field.value,
-        onValueChange = onValueChange,
+    InternalOutlinedCheckboxGroup (
+        value = value?:0,
+        onChanged = onValueChange,
+        modifier = modifier,
+        orientation = orientation,
+        errorId = errorId,
+        labelId = labelId,
+        hintId = hintId,
+        itemValues = itemValues,
+        itemLabels = itemLabels,
+        itemIcons = itemIcons,
+        itemIconsFocused = itemIconsFocused,
+    )
+}
+
+@Composable
+fun OutlinedBitCheckboxWrapper(
+    field : FieldWrapper<Int>,
+    onValueChange : (Int) -> Unit,
+    modifier : Modifier = Modifier,
+    orientation : Orientation = Orientation.NO,
+    @StringRes labelId : Int? = null,
+    @StringRes hintId : Int? = null,
+    itemValues : Array<Int>,
+    itemLabels : Array<String>? = null,
+    itemIcons : Array<ImageVector>? = null,
+    itemIconsFocused : Array<ImageVector>? = null
+) {
+    InternalOutlinedCheckboxGroup(
+        value = field.value?:0,
+        onChanged = onValueChange,
         modifier = modifier,
         orientation = orientation,
         labelId = labelId,
+        errorId = field.errorId,
+        hintId = hintId,
         itemValues = itemValues,
         itemLabels = itemLabels,
-        itemIcons = itemIcons
+        itemIcons = itemIcons,
+        itemIconsFocused = itemIconsFocused,
     )
 }

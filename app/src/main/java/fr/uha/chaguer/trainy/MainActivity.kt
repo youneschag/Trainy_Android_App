@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                                    containerColor = Color(0xFF673AB7) // Violet
+                                    containerColor = Color(0xFF673AB7)
                                 )
                             )
                         }
@@ -71,8 +71,8 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(
-                                    top = innerPadding.calculateTopPadding() - 50.dp, // Réduit l'espace en haut
-                                    bottom = 0.dp // Supprime l’espace blanc sous la Bottom Bar
+                                    top = innerPadding.calculateTopPadding() - 50.dp,
+                                    bottom = 0.dp
                                 )
                         ) {
                             TrainyAppScreen()

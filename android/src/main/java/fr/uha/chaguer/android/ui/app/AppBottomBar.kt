@@ -36,17 +36,26 @@ fun AppBottomBar(
                 selected = isOnBackStack,
                 onClick = {
                     if (isOnBackStack) {
+                        // When we click again on a bottom bar item and it was already selected
+                        // we want to pop the back stack until the initial destination of this bottom bar item
                         navigator.popBackStack(destination.direction, false)
                         return@NavigationBarItem
                     }
 
                     navigator.navigate(destination.direction) {
+                        //                        navController.graph
+                        // Pop up to the root of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
                         popUpTo(root) {
                             if (saveLastScreen) {
                                 saveState = true
                             }
                         }
+                        // Avoid multiple copies of the same destination when
+                        // select again the same item
                         launchSingleTop = true
+                        // Restore state when select again a previously selected item
                         if (saveLastScreen) {
                             restoreState = true
                         }

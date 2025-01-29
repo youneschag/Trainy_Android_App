@@ -1,6 +1,5 @@
 package fr.uha.chaguer.android.database
 
-
 import java.util.Date
 
 interface Timable {

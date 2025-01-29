@@ -1,9 +1,12 @@
 package fr.uha.chaguer.android.ui.app
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.android.flow.combine
@@ -58,9 +61,7 @@ class UITitleBuilder {
         _hasError.value = e
     }
 
-    private val _menuEntries : MutableStateFlow<TreeMap<String, AppMenuEntry>> = MutableStateFlow(
-        TreeMap()
-    )
+    private val _menuEntries : MutableStateFlow<TreeMap<String, AppMenuEntry>> = MutableStateFlow(TreeMap())
 
     fun contributeToMenuEntries (newContributions : List<AppMenuEntry>) {
         val newEntries = TreeMap<String, AppMenuEntry>()
