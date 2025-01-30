@@ -1,16 +1,11 @@
 package fr.uha.chaguer.trainy.ui.progress
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.uha.chaguer.trainy.model.RoutineProgress
 import fr.uha.chaguer.trainy.repository.ProgressRepository
-import fr.uha.chaguer.trainy.repository.RoutineRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,19 +30,16 @@ class ProgressViewModel @Inject constructor(
         repetitions: Int,
         duration: Int
     ): ValidationResult {
-        // Récupérer les progrès existants
         val exerciseProgress = repository.getProgressForExercise(routineId, exerciseId)
         val newRepetitions = (exerciseProgress?.completedRepetitions ?: 0) + repetitions
         val newDuration = (exerciseProgress?.completedDuration ?: 0) + duration
 
-        // Récupérer les données de l'exercice
         val targetExercise = repository.getExercise(exerciseId)
             ?: return ValidationResult(
                 isSuccess = false,
                 message = "Exercice introuvable."
             )
 
-        // Validation des limites
         if (newRepetitions > targetExercise.repetitions || newDuration > targetExercise.duration) {
             return ValidationResult(
                 isSuccess = false,
@@ -55,7 +47,6 @@ class ProgressViewModel @Inject constructor(
             )
         }
 
-        // Enregistrer les progrès
         repository.saveProgress(routineId, exerciseId, repetitions, duration)
         return ValidationResult(isSuccess = true)
     }

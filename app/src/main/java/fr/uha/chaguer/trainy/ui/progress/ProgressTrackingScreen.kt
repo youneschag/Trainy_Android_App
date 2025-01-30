@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,8 +27,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.android.database.DateUtils.formatDate
-import fr.uha.chaguer.android.ui.StateScreen
-import fr.uha.chaguer.android.ui.app.AppTopBar
 import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.Routine
@@ -47,8 +46,8 @@ fun ProgressTrackingScreen(
 ) {
     val routines by dm.getAllRoutines().collectAsStateWithLifecycle(emptyList())
     val fullRoutines by vm.getAllFullRoutines().collectAsStateWithLifecycle(emptyList())
-    val currentIndex = remember { mutableStateOf(0) }
-    val selectedRoutine = routines.getOrNull(currentIndex.value)
+    val currentIndex = remember { mutableIntStateOf(0) }
+    val selectedRoutine = routines.getOrNull(currentIndex.intValue)
     val progressList by pm.getProgressForRoutine(selectedRoutine?.routineId ?: 0L)
         .collectAsStateWithLifecycle(emptyList())
     val errorDialogState = remember { mutableStateOf(false) }
@@ -60,7 +59,6 @@ fun ProgressTrackingScreen(
             .background(Color(0xFFF5F5F5))
             .padding(16.dp)
     ) {
-        // ✅ Titre et barre violette
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -80,12 +78,11 @@ fun ProgressTrackingScreen(
 
             RoutineNavigator(
                 routines = routines,
-                currentIndex = currentIndex.value,
-                onPrevious = { if (currentIndex.value > 0) currentIndex.value-- },
-                onNext = { if (currentIndex.value < routines.size - 1) currentIndex.value++ }
+                currentIndex = currentIndex.intValue,
+                onPrevious = { if (currentIndex.intValue > 0) currentIndex.intValue-- },
+                onNext = { if (currentIndex.intValue < routines.size - 1) currentIndex.intValue++ }
             )
 
-            // Liste des exercices
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -106,7 +103,6 @@ fun ProgressTrackingScreen(
                     )
 
                     Column {
-                        // Bloc de saisie pour l'exercice
                         ExerciseItemWithDoneButton(
                             exercise = exercise,
                             onSaveProgress = { repetition, duration ->
@@ -127,7 +123,6 @@ fun ProgressTrackingScreen(
                             differenceMessage = differenceMessage
                         )
 
-                        // Progrès réalisés pour cet exercice
                         val progressForExercise =
                             progressList.filter { it.exerciseId == exercise.exerciseId }
                         if (progressForExercise.isNotEmpty()) {
@@ -185,7 +180,7 @@ fun calculateDifferenceMessage(exercise: Exercise, progress: RoutineProgress?): 
     return if (remainingRepetitions == 0 && remainingDuration == 0) {
         "Exercice terminé !"
     } else {
-        "Il reste $remainingRepetitions répétitions et $remainingDuration minutes."
+        "Il reste $remainingRepetitions répétitions et $remainingDuration minutes"
     }
 }
 
@@ -228,10 +223,9 @@ fun RoutineNavigator(
 fun ExerciseItemWithDoneButton(
     exercise: Exercise,
     isCompleted: Boolean,
-    onSaveProgress: (Int, Int) -> Unit, // Nouvelle fonction pour enregistrer les progrès
-    differenceMessage: String // Message contenant les différences
+    onSaveProgress: (Int, Int) -> Unit,
+    differenceMessage: String
 ) {
-    // États pour la fréquence et la durée saisies par l'utilisateur
     var enteredRepetition by remember { mutableStateOf("") }
     var enteredDuration by remember { mutableStateOf("") }
 
@@ -246,7 +240,6 @@ fun ExerciseItemWithDoneButton(
             )
             .padding(16.dp)
     ) {
-        // Informations de l'exercice
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -261,7 +254,6 @@ fun ExerciseItemWithDoneButton(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Champs pour la fréquence et la durée réalisées
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -270,21 +262,20 @@ fun ExerciseItemWithDoneButton(
                 value = enteredRepetition,
                 onValueChange = { enteredRepetition = it },
                 label = { Text("Répétitions réalisées") },
-                enabled = !isCompleted, // Désactiver si terminé
+                enabled = !isCompleted,
                 modifier = Modifier.weight(1f)
             )
             OutlinedTextField(
                 value = enteredDuration,
                 onValueChange = { enteredDuration = it },
                 label = { Text("Durée réalisée (min)") },
-                enabled = !isCompleted, // Désactiver si terminé
+                enabled = !isCompleted,
                 modifier = Modifier.weight(1f)
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Bouton pour enregistrer les progrès
         Button(
             onClick = {
                 val repetition = enteredRepetition.toIntOrNull() ?: 0
@@ -294,7 +285,7 @@ fun ExerciseItemWithDoneButton(
                 enteredRepetition = ""
                 enteredDuration = ""
             },
-            enabled = !isCompleted, // Désactiver si terminé
+            enabled = !isCompleted,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Enregistrer")
@@ -302,7 +293,6 @@ fun ExerciseItemWithDoneButton(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Affichage de la différence sous l'exercice
         Text(
             text = differenceMessage,
             style = MaterialTheme.typography.bodySmall,

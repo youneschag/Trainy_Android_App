@@ -1,12 +1,10 @@
 package fr.uha.chaguer.trainy.repository
 
 import androidx.annotation.WorkerThread
-import fr.uha.chaguer.trainy.database.RoutineDao
 import fr.uha.chaguer.trainy.database.RoutineProgressDao
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.RoutineProgress
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -27,14 +25,12 @@ class ProgressRepository(
     suspend fun saveProgress(routineId: Long, exerciseId: Long, repetitions: Int, duration: Int) {
         val existingProgress = getProgressForExercise(routineId, exerciseId)
 
-        val updatedProgress = if (existingProgress != null) {
-            existingProgress.copy(
-                completedRepetitions = existingProgress.completedRepetitions + repetitions,
-                completedDuration = existingProgress.completedDuration + duration,
-                date = Date()
-            )
-        } else {
-            RoutineProgress(
+        val updatedProgress = existingProgress?.copy(
+            completedRepetitions = existingProgress.completedRepetitions + repetitions,
+            completedDuration = existingProgress.completedDuration + duration,
+            date = Date()
+        )
+            ?: RoutineProgress(
                 id = 0,
                 routineId = routineId,
                 exerciseId = exerciseId,
@@ -42,7 +38,6 @@ class ProgressRepository(
                 completedDuration = duration,
                 date = Date()
             )
-        }
 
         routineProgressDao.insertOrUpdateProgress(updatedProgress)
     }
