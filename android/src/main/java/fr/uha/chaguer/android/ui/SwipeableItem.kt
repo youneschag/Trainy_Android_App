@@ -63,7 +63,7 @@ fun SwipeableItem(
             if (onDelete == null && direction == SwipeToDismissBoxValue.EndToStart) return@SwipeToDismissBox
             val color by animateColorAsState(
                 targetValue = when (dismissState.targetValue) {
-                    SwipeToDismissBoxValue.Settled -> Color.LightGray
+                    SwipeToDismissBoxValue.Settled -> Color.Transparent
                     SwipeToDismissBoxValue.EndToStart -> Color(0xFFFF0000)
                     SwipeToDismissBoxValue.StartToEnd -> Color(0xFF00FF00)
                 }, label = "color"
