@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.repository.RoutineRepository
 import fr.uha.chaguer.android.viewmodel.Result
+import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.FullRoutine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,15 +41,10 @@ class ListRoutinesViewModel @Inject constructor(
     sealed class UIEvent {
         data class OnDelete(val routine: Routine) : UIEvent()
         object OnDeleteAll : UIEvent()
-        data class OnRename(val routineId: Long, val newName: String) : UIEvent()
-        data class OnAdd(val routine: Routine) : UIEvent()
     }
 
     fun send(uiEvent: UIEvent) {
         viewModelScope.launch {
-            if (uiState.value !is Result.Success) return@launch
-            val routines = (uiState.value as Result.Success<UIState>).content.routines
-
             when (uiEvent) {
                 is UIEvent.OnDelete -> {
                     repository.deleteRoutine(uiEvent.routine.routineId)
@@ -56,17 +52,6 @@ class ListRoutinesViewModel @Inject constructor(
 
                 is UIEvent.OnDeleteAll -> {
                     repository.deleteAllRoutines()
-                }
-
-                is UIEvent.OnRename -> {
-                    val routine = routines.find { it.routineId == uiEvent.routineId }
-                    if (routine != null) {
-                        repository.updateName(routine.routineId, uiEvent.newName)
-                    }
-                }
-
-                is UIEvent.OnAdd -> {
-                    repository.create(uiEvent.routine)
                 }
             }
         }
@@ -82,9 +67,9 @@ class ListRoutinesViewModel @Inject constructor(
         return repository.getAllFullRoutines()
     }
 
-    fun removeExerciseFromRoutine(routineId: Long, exerciseId: Long) {
+    fun removeExerciseFromRoutine(routineId: Long, exercise: Exercise) {
         viewModelScope.launch {
-            repository.removeExercise(routineId, exerciseId)
+            repository.removeExercise(routineId, exercise)
         }
     }
 }

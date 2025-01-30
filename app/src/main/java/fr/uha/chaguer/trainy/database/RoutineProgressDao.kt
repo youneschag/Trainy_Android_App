@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RoutineProgressDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateProgress(progress: RoutineProgress)
+    @Query("SELECT * FROM RoutineProgress WHERE routineId = :routineId")
+    fun getProgressForRoutine(routineId: Long): Flow<List<RoutineProgress>>
 
     @Query("SELECT * FROM RoutineProgress WHERE routineId = :routineId AND exerciseId = :exerciseId")
     suspend fun getProgressForExercise(routineId: Long, exerciseId: Long): RoutineProgress?
 
-    @Query("SELECT * FROM RoutineProgress WHERE routineId = :routineId")
-    fun getProgressForRoutine(routineId: Long): Flow<List<RoutineProgress>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateProgress(progress: RoutineProgress)
 
     @Query("SELECT * FROM exercises WHERE exerciseId = :exerciseId")
     suspend fun getExerciseById(exerciseId: Long): Exercise?

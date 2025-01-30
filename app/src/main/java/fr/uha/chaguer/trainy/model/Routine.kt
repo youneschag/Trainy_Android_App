@@ -11,5 +11,5 @@ data class Routine(
     val name: String,
     val frequency: Int,
     val objective: String,
-    val startDay: Date
+    val startDay: Date,
 )

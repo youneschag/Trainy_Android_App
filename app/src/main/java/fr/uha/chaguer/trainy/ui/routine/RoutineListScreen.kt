@@ -82,7 +82,6 @@ fun RoutineListScreen(
             .background(Color(0xFFF5F5F5))
             .padding(16.dp)
     ) {
-        // ✅ Titre et barre violette
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -101,10 +100,10 @@ fun RoutineListScreen(
             )
         }
 
-        var isRoutineListEmpty by remember { mutableStateOf(true) } // État pour vérifier si la liste est vide
+        var isRoutineListEmpty by remember { mutableStateOf(true) }
 
         StateScreen(state = uiState) { content ->
-            isRoutineListEmpty = content.routines.isEmpty() // Mise à jour de l'état
+            isRoutineListEmpty = content.routines.isEmpty()
 
             if (content.routines.isEmpty()) {
                 Column(
@@ -114,7 +113,7 @@ fun RoutineListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Aucune routine disponible",
+                        text = stringResource(R.string.no_routine),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray
@@ -124,7 +123,7 @@ fun RoutineListScreen(
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     itemsIndexed(
                         items = fullRoutines,
-                        key = { _, fullRoutine -> fullRoutine.routine.routineId } // Clé unique
+                        key = { _, fullRoutine -> fullRoutine.routine.routineId }
                     ) { index, fullRoutine ->
                         val isExpanded = expandedRoutines[fullRoutine.routine.routineId] == true
 
@@ -140,8 +139,8 @@ fun RoutineListScreen(
                                     expandedRoutines[fullRoutine.routine.routineId] = !isExpanded
                                 },
                                 onAddExercise = { navigator.navigate(RoutineDetailsScreenDestination(fullRoutine.routine.routineId)) },
-                                onRemoveExercise = { exerciseId ->
-                                    vm.removeExerciseFromRoutine(fullRoutine.routine.routineId, exerciseId)
+                                onRemoveExercise = { exercise ->
+                                    vm.removeExerciseFromRoutine(fullRoutine.routine.routineId, exercise)
                                 },
                                 isEven = index % 2 == 0
                             )
@@ -151,7 +150,6 @@ fun RoutineListScreen(
             }
         }
 
-        // ✅ Boutons "Ajouter" et "Tout supprimer" RESTENT visibles
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -177,7 +175,7 @@ fun RoutineListScreen(
                     containerColor = Color(0xFFD32F2F),
                     contentColor = Color.White
                 ),
-                enabled = !isRoutineListEmpty, // ✅ Désactivation propre si la liste est vide
+                enabled = !isRoutineListEmpty,
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.Filled.Delete, contentDescription = "Tout supprimer")
@@ -187,7 +185,6 @@ fun RoutineListScreen(
         }
     }
 
-    // Boîte de dialogue de confirmation pour suppression
     if (routineToDelete != null) {
         AlertDialog(
             onDismissRequest = { routineToDelete = null },
@@ -209,7 +206,6 @@ fun RoutineListScreen(
         )
     }
 
-    // Boîte de dialogue de confirmation pour supprimer toutes les routines
     if (showDeleteAllDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteAllDialog = false },
@@ -233,56 +229,12 @@ fun RoutineListScreen(
 }
 
 @Composable
-fun SuccessListRoutinesScreen(
-    fullRoutines: List<FullRoutine>,
-    navigator: DestinationsNavigator,
-    expandedRoutines: MutableMap<Long, Boolean>,
-    onDeleteRequest: (Routine) -> Unit,
-    onEditRequest: (Routine) -> Unit,
-    onAddExercise: (Long) -> Unit,
-    removeExerciseFromRoutine: (Long, Long) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        itemsIndexed(
-            items = fullRoutines,
-            key = { _, fullRoutine -> fullRoutine.routine.routineId } // Clé unique
-        ) { index, fullRoutine ->
-            val isExpanded = expandedRoutines[fullRoutine.routine.routineId] == true
-
-            SwipeableItem(
-                modifier = Modifier.padding(8.dp),
-                onDelete = { onDeleteRequest(fullRoutine.routine) },
-                onEdit = { onEditRequest(fullRoutine.routine) }
-            ) {
-                RoutineItem(
-                    fullRoutine = fullRoutine,
-                    isExpanded = isExpanded,
-                    onExpandToggle = {
-                        expandedRoutines[fullRoutine.routine.routineId] = !isExpanded
-                    },
-                    onAddExercise = { onAddExercise(fullRoutine.routine.routineId) },
-                    onRemoveExercise = { exerciseId ->
-                        removeExerciseFromRoutine(fullRoutine.routine.routineId, exerciseId)
-                    },
-                    isEven = index % 2 == 0
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun RoutineItem(
     fullRoutine: FullRoutine,
     isExpanded: Boolean,
     onExpandToggle: () -> Unit,
     onAddExercise: () -> Unit,
-    onRemoveExercise: (Long) -> Unit,
+    onRemoveExercise: (Exercise) -> Unit,
     isEven: Boolean
 ) {
     Column(
@@ -317,33 +269,32 @@ fun RoutineItem(
 
         Row(modifier = Modifier.fillMaxWidth()) {
             Icon(imageVector = Icons.Default.FitnessCenter, contentDescription = null, tint = Color(0xFF673AB7))
-            Text(text = " Objectif :", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            Text(text = stringResource(R.string.routine_objective), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             Text(text = fullRoutine.routine.objective, modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
             Icon(imageVector = Icons.Default.Timer, contentDescription = null, tint = Color(0xFF673AB7))
-            Text(text = " Fréquence :", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            Text(text = stringResource(R.string.routine_frequency), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             Text(text = "${fullRoutine.routine.frequency} fois/semaine", modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
             Icon(imageVector = Icons.Default.List, contentDescription = null, tint = Color(0xFF673AB7))
-            Text(text = " Début :", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            Text(text = stringResource(R.string.routine_start_day), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             Text(text = formatDate(fullRoutine.routine.startDay), modifier = Modifier.padding(start = 8.dp))
         }
 
-        // Show exercises if expanded
         if (isExpanded) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Exercices associés :",
+                text = stringResource(R.string.exercise_list),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
             if (fullRoutine.exercises.isEmpty()) {
                 Text(
-                    text = "Aucun exercice associé.",
+                    text = stringResource(R.string.no_exercise),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -351,12 +302,11 @@ fun RoutineItem(
                 fullRoutine.exercises.forEach { exercise ->
                     ExerciseItem(
                         exercise = exercise,
-                        onRemove = { onRemoveExercise(exercise.exerciseId) }
+                        onRemove = { onRemoveExercise(exercise) }
                     )
                 }
             }
 
-            // Button to add an exercise
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = onAddExercise,
@@ -371,7 +321,7 @@ fun RoutineItem(
 @Composable
 fun ExerciseItem(
     exercise: Exercise,
-    onRemove: () -> Unit // Callback pour supprimer l'exercice de la routine
+    onRemove: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -385,7 +335,6 @@ fun ExerciseItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            // ✅ Nom de l'exercice avec une icône
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = Icons.Default.FitnessCenter, contentDescription = "Nom", tint = Color(0xFF673AB7))
                 Text(
@@ -398,11 +347,9 @@ fun ExerciseItem(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // ✅ Description avec icône + texte souligné et gras
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Default.List, contentDescription = "Description", tint = Color(0xFF673AB7))
                 Text(
-                    text = " Description :",
+                    text = stringResource(R.string.description),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
                     color = Color.DarkGray,
@@ -415,11 +362,9 @@ fun ExerciseItem(
                 )
             }
 
-            // ✅ Durée avec icône + texte souligné et gras
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Default.Timer, contentDescription = "Durée", tint = Color(0xFF673AB7))
                 Text(
-                    text = " Durée :",
+                    text = stringResource(R.string.duration),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
                     color = Color.DarkGray,
@@ -432,11 +377,9 @@ fun ExerciseItem(
                 )
             }
 
-            // ✅ Répétitions avec icône + texte souligné et gras
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Default.Repeat, contentDescription = "Répétitions", tint = Color(0xFF673AB7))
                 Text(
-                    text = " Répétitions :",
+                    text = stringResource(R.string.repetitions),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
                     color = Color.DarkGray,
@@ -450,7 +393,6 @@ fun ExerciseItem(
             }
         }
 
-        // ✅ Bouton de suppression
         IconButton(
             onClick = onRemove,
             modifier = Modifier.padding(start = 8.dp)

@@ -10,5 +10,5 @@ import androidx.room.Index
 )
 data class RoutineExerciseAssociation(
     val routineId: Long,
-    val exerciseId: Long
+    val exerciseId: Long,
 )

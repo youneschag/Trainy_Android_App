@@ -1,4 +1,4 @@
-package fr.uha.chaguer.trainy.ui.exercise
+package fr.uha.chaguer.trainy.ui.routine
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -74,15 +74,13 @@ fun OutlinedExercisesField(
                     items = value,
                     key = { exercise -> exercise.exerciseId }
                 ) { exercise ->
-                    ExerciseRow(
-                        exercise = exercise,
-                        onExerciseChange = { updatedExercise ->
-                            // Appelle une fonction pour mettre à jour l'exercice
-                        },
-                        onExerciseDelete = {
-                            onRemoveExercise(it)
-                        }
-                    )
+                    Row(
+                        modifier = Modifier.clickable(
+                            onClick = { onRemoveExercise(exercise) }
+                        )
+                    ){
+                        RoutineExercise(exercise)
+                    }
                 }
             }
         }
@@ -92,83 +90,17 @@ fun OutlinedExercisesField(
 @Composable
 fun OutlinedExercisesFieldWrapper(
     field: FieldWrapper<List<Exercise>>,
-    onExerciseChange: (Exercise) -> Unit, // Pour modifier un exercice
-    onExerciseDelete: (Exercise) -> Unit, // Pour supprimer un exercice
+    onAddExercise: (Exercise) -> Unit,
+    onRemoveExercise: (Exercise) -> Unit,
     modifier: Modifier = Modifier,
     @StringRes labelId: Int? = null,
 ) {
-    Column(modifier = modifier) {
-        // Titre du champ (facultatif)
-        if (labelId != null) {
-            Text(
-                text = stringResource(labelId),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-
-        // Liste d'exercices
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(field.value ?: emptyList()) { exercise ->
-                ExerciseRow(
-                    exercise = exercise,
-                    onExerciseChange = onExerciseChange,
-                    onExerciseDelete = onExerciseDelete
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ExerciseRow(
-    exercise: Exercise,
-    onExerciseChange: (Exercise) -> Unit,
-    onExerciseDelete: (Exercise) -> Unit,
-) {
-    val showDialog = remember { mutableStateOf(false) }
-
-    if (showDialog.value) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showDialog.value = false },
-            title = { Text("Confirmation") },
-            text = { Text("Voulez-vous vraiment supprimer cet exercice ?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    onExerciseDelete(exercise)
-                    showDialog.value = false
-                }) {
-                    Text("Supprimer")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog.value = false }) {
-                    Text("Annuler")
-                }
-            }
-        )
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        OutlinedTextField(
-            value = exercise.name,
-            onValueChange = { newName ->
-                onExerciseChange(exercise.copy(name = newName))
-            },
-            label = { Text("Nom de l'exercice") },
-            modifier = Modifier.weight(1f)
-        )
-
-        IconButton(onClick = { showDialog.value = true }) {
-            Icon(Icons.Filled.Delete, contentDescription = "Supprimer")
-        }
-    }
+    OutlinedExercisesField(
+        value = field.value ?: emptyList(),
+        onAddExercise = onAddExercise,
+        onRemoveExercise = onRemoveExercise,
+        modifier = modifier,
+        labelId = labelId,
+        errorId = field.errorId,
+    )
 }

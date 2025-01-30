@@ -9,5 +9,5 @@ data class FullRoutine(
     val routine: Routine,
 
     @Relation(parentColumn = "routineId", entityColumn = "exerciseId", associateBy = Junction(RoutineExerciseAssociation::class))
-    val exercises: List<Exercise> = emptyList()
+    val exercises: List<Exercise>,
 )

@@ -161,18 +161,18 @@ class FeedDatabase(
         }
 
         private fun getRandomProgress(routineId: Long, exerciseId: Long): RoutineProgress {
-            val isCompleted = rnd.nextDouble() < 0.3 // 30% de chances que l'exercice soit terminé
+            val isCompleted = rnd.nextDouble() < 0.3
 
             val completedRepetitions = if (isCompleted) {
-                getRandomBetween(15, 25) // Valeurs élevées si terminé
+                getRandomBetween(15, 25)
             } else {
-                getRandomBetween(5, 20)  // Valeurs normales
+                getRandomBetween(5, 20)
             }
 
             val completedDuration = if (isCompleted) {
-                getRandomBetween(20, 40) // Durée plus longue si terminé
+                getRandomBetween(20, 40)
             } else {
-                getRandomBetween(5, 30)  // Valeurs normales
+                getRandomBetween(5, 30)
             }
 
             return RoutineProgress(

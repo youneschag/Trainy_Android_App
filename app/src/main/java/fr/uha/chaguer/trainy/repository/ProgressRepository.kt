@@ -1,11 +1,9 @@
 package fr.uha.chaguer.trainy.repository
 
 import androidx.annotation.WorkerThread
-import fr.uha.chaguer.trainy.database.ProgressDao
 import fr.uha.chaguer.trainy.database.RoutineDao
 import fr.uha.chaguer.trainy.database.RoutineProgressDao
 import fr.uha.chaguer.trainy.model.Exercise
-import fr.uha.chaguer.trainy.model.Progress
 import fr.uha.chaguer.trainy.model.RoutineProgress
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -15,29 +13,8 @@ import java.util.Date
 
 class ProgressRepository(
     private val dispatcher: CoroutineDispatcher,
-    private val progressDao: ProgressDao,
     private val routineProgressDao: RoutineProgressDao
 ) {
-
-    suspend fun getCompletedExercisesForRoutine(routineId: Long): List<Long> =
-        withContext(dispatcher) {
-            progressDao.getCompletedExercises(routineId)
-        }
-
-    suspend fun addExerciseToProgress(routineId: Long, exerciseId: Long) =
-        withContext(dispatcher) {
-            val progress = Progress(
-                routineId = routineId,
-                exerciseId = exerciseId,
-                isCompleted = true
-            )
-            progressDao.insertProgress(progress)
-        }
-
-    suspend fun removeExerciseFromProgress(routineId: Long, exerciseId: Long) =
-        withContext(dispatcher) {
-            progressDao.deleteProgress(routineId, exerciseId)
-        }
 
     fun getProgressForRoutine(routineId: Long): Flow<List<RoutineProgress>> {
         return routineProgressDao.getProgressForRoutine(routineId)
@@ -58,6 +35,7 @@ class ProgressRepository(
             )
         } else {
             RoutineProgress(
+                id = 0,
                 routineId = routineId,
                 exerciseId = exerciseId,
                 completedRepetitions = repetitions,
@@ -69,8 +47,8 @@ class ProgressRepository(
         routineProgressDao.insertOrUpdateProgress(updatedProgress)
     }
 
-    suspend fun getExercise(exerciseId: Long): Exercise? {
-        return routineProgressDao.getExerciseById(exerciseId)
+    suspend fun getExercise(id: Long): Exercise? {
+        return routineProgressDao.getExerciseById(id)
     }
 
     @WorkerThread

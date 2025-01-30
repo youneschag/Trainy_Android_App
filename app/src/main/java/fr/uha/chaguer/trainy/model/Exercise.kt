@@ -10,5 +10,5 @@ data class Exercise(
         val name: String,
         val description: String,
         val duration: Int,
-        val repetitions: Int
+        val repetitions: Int,
 )

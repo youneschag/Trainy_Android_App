@@ -7,10 +7,10 @@ import java.util.Date
 @Entity(tableName = "routineProgress")
 data class RoutineProgress(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val routineId: Long,
     val exerciseId: Long,
     val completedRepetitions: Int,
     val completedDuration: Int,
-    val date: Date
+    val date: Date,
 )

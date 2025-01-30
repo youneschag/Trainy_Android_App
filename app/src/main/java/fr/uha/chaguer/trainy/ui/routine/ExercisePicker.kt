@@ -1,4 +1,4 @@
-package fr.uha.chaguer.trainy.ui.exercise
+package fr.uha.chaguer.trainy.ui.routine
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +26,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.uha.chaguer.android.ui.app.AppTitle
 import fr.uha.chaguer.trainy.database.ExerciseDao
 import fr.uha.chaguer.trainy.model.Exercise
+import fr.uha.chaguer.trainy.ui.routine.RoutineExercise
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -42,7 +43,6 @@ fun ExercisePicker(
     onSelect: (Exercise?) -> Unit
 ) {
     val exercises = vm.exercises.collectAsStateWithLifecycle(initialValue = emptyList())
-
     Dialog(onDismissRequest = { onSelect(null) }) {
         Scaffold(
             topBar = {
@@ -58,24 +58,14 @@ fun ExercisePicker(
                     items = exercises.value,
                     key = { exercise -> exercise.exerciseId }
                 ) { item ->
-                    // Chaque item est cliquable pour le sélectionner
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(onClick = { onSelect(item) }) // Action sur clic
+                            .clickable(onClick = { onSelect(item) })
                             .padding(8.dp)
                             .background(Color.White)
                     ) {
-                        Text(
-                            text = "${item.name} - ${item.duration} min",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = item.description,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Light
-                        )
+                        RoutineExercise(item)
                     }
                 }
             }

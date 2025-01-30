@@ -19,18 +19,6 @@ class ProgressViewModel @Inject constructor(
     private val repository: ProgressRepository
 ) : ViewModel() {
 
-    suspend fun getCompletedExercises(routineId: Long): List<Long> {
-        return repository.getCompletedExercisesForRoutine(routineId)
-    }
-
-    suspend fun saveProgress(routineId: Long, exerciseId: Long, isCompleted: Boolean) {
-        if (isCompleted) {
-            repository.addExerciseToProgress(routineId, exerciseId)
-        } else {
-            repository.removeExerciseFromProgress(routineId, exerciseId)
-        }
-    }
-
     fun getProgressForRoutine(routineId: Long): Flow<List<RoutineProgress>> {
         return repository.getProgressForRoutine(routineId)
     }

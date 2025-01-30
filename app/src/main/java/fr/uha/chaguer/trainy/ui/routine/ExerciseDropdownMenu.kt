@@ -26,7 +26,6 @@ fun ExerciseDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
-        // Le bouton pour afficher le menu déroulant
         Button(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth()
@@ -37,7 +36,6 @@ fun ExerciseDropdownMenu(
             )
         }
 
-        // Le menu déroulant
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },

@@ -8,7 +8,6 @@ import androidx.room.TypeConverters
 import fr.uha.chaguer.android.database.DatabaseTypeConverters
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.Routine
-import fr.uha.chaguer.trainy.model.Progress
 import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import fr.uha.chaguer.trainy.model.RoutineProgress
 
@@ -17,20 +16,17 @@ import fr.uha.chaguer.trainy.model.RoutineProgress
     entities = [
         Exercise::class,
         Routine::class,
-        Progress::class,
         RoutineProgress::class,
         RoutineExerciseAssociation::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
-
 abstract class TrainyDatabase : RoomDatabase() {
+
     abstract fun exerciseDAO(): ExerciseDao
 
     abstract fun routineDAO(): RoutineDao
-
-    abstract fun progressDAO(): ProgressDao
 
     abstract fun routineProgressDAO(): RoutineProgressDao
 

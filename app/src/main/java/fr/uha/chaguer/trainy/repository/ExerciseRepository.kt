@@ -27,36 +27,13 @@ class ExerciseRepository(
     }
 
     @WorkerThread
-    suspend fun updateExercise(exercise: Exercise) = withContext(dispatcher) {
+    suspend fun updateExercise(exercise: Exercise) : Long = withContext(dispatcher) {
         exerciseDao.updateExercise(exercise)
     }
 
     @WorkerThread
     suspend fun upsertExercise(exercise: Exercise): Long = withContext(dispatcher) {
         return@withContext exerciseDao.upsert(exercise)
-    }
-
-    @WorkerThread
-    suspend fun addExerciseToRoutine(routineId: Long, exercise: Exercise) {
-        val exerciseId = exerciseDao.insertExercise(exercise)
-        exerciseDao.insertRoutineExerciseLink(
-            RoutineExerciseAssociation(routineId = routineId, exerciseId = exerciseId)
-        )
-    }
-
-    @WorkerThread
-    suspend fun deleteExerciseFromRoutine(routineId: Long, exerciseId: Long) {
-        exerciseDao.removeExerciseFromRoutine(routineId, exerciseId)
-    }
-
-    @WorkerThread
-    suspend fun addExercise(exercise: Exercise) = withContext(dispatcher) {
-        exerciseDao.insertExercise(exercise)
-    }
-
-    @WorkerThread
-    suspend fun updateExerciseName(exerciseId: Long, newName: String) = withContext(dispatcher) {
-        exerciseDao.updateExerciseName(exerciseId, newName)
     }
 
     @WorkerThread
@@ -67,4 +44,29 @@ class ExerciseRepository(
     suspend fun deleteAllExercises() {
         exerciseDao.deleteAllExercises()
     }
+
+
+                @WorkerThread
+                suspend fun addExerciseToRoutine(routineId: Long, exercise: Exercise) {
+                    val exerciseId = exerciseDao.insertExercise(exercise)
+                    exerciseDao.insertRoutineExerciseLink(
+                        RoutineExerciseAssociation(routineId = routineId, exerciseId = exerciseId)
+                    )
+                }
+
+                @WorkerThread
+                suspend fun deleteExerciseFromRoutine(routineId: Long, exerciseId: Long) {
+                    exerciseDao.removeExerciseFromRoutine(routineId, exerciseId)
+                }
+
+                @WorkerThread
+                suspend fun addExercise(exercise: Exercise) = withContext(dispatcher) {
+                    exerciseDao.insertExercise(exercise)
+                }
+
+                @WorkerThread
+                suspend fun updateExerciseName(exerciseId: Long, newName: String) = withContext(dispatcher) {
+                    exerciseDao.updateExerciseName(exerciseId, newName)
+                }
+
 }

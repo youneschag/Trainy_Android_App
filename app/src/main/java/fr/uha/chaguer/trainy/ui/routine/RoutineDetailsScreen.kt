@@ -35,6 +35,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.android.database.DateUtils.formatDate
 import fr.uha.chaguer.trainy.model.Exercise
+import fr.uha.chaguer.trainy.ui.exercise.ExerciseViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -43,25 +44,25 @@ import java.util.Locale
 @Composable
 fun RoutineDetailsScreen(
     vm: RoutineViewModel = hiltViewModel(),
+    em: ExerciseViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
     routineId: Long,
 ) {
     val routineWithExercises by vm.getRoutineWithExercises(routineId)
         .collectAsStateWithLifecycle(initialValue = null)
-    val allExercises by vm.getAllExercises().collectAsStateWithLifecycle(emptyList())
+    val allExercises by em.getAllExercises().collectAsStateWithLifecycle(emptyList())
 
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp) // 🔹 Moins d'espace entre les champs
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // ✅ Titre avec flèche de retour
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            IconButton(onClick = { navigator.popBackStack() }) { // 🔙 Flèche de retour
+            IconButton(onClick = { navigator.popBackStack() }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Retour",
@@ -76,12 +77,10 @@ fun RoutineDetailsScreen(
             )
         }
 
-        // Vérifier si les données sont disponibles
         routineWithExercises?.let { fullRoutine ->
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // ✅ Affichage des détails de la routine
                 Text(
                     text = fullRoutine.routine.name,
                     style = MaterialTheme.typography.titleLarge,
@@ -105,7 +104,6 @@ fun RoutineDetailsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // ✅ Liste des exercices associés
                 Text(
                     text = "🏋️ Exercices associés",
                     style = MaterialTheme.typography.titleMedium,
@@ -121,7 +119,7 @@ fun RoutineDetailsScreen(
                 } else {
                     Column(
                         modifier = Modifier
-                            .weight(1f) // ✅ Permet d'éviter une hauteur infinie
+                            .weight(1f)
                             .fillMaxWidth()
                     ) {
                         fullRoutine.exercises.forEach { exercise ->
@@ -136,7 +134,6 @@ fun RoutineDetailsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ Dropdown pour ajouter des exercices existants
                 var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
 
                 ExerciseDropdownMenu(
@@ -148,11 +145,10 @@ fun RoutineDetailsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ Bouton d'association d'un exercice
                 Button(
                     onClick = {
                         selectedExercise?.let {
-                            vm.addExerciseToRoutine(routineId, it.exerciseId)
+                            vm.addExerciseToRoutine(routineId, it)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -162,7 +158,6 @@ fun RoutineDetailsScreen(
                 }
             }
         } ?: run {
-            // ✅ Gestion de l'état où les données ne sont pas encore chargées
             Text(text = "Chargement des détails...", color = Color.Gray)
         }
     }
