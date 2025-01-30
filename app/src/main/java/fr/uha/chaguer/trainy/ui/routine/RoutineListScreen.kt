@@ -2,7 +2,6 @@ package fr.uha.chaguer.trainy.ui.routine
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +18,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,16 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.CreateExerciseScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RoutineDetailsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.CreateRoutineScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.EditRoutineScreenDestination
@@ -59,10 +53,6 @@ import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.ui.theme.MontserratFont
-import okhttp3.internal.format
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Destination<RootGraph>
 @Composable

@@ -30,7 +30,6 @@ val MontserratFont = FontFamily(
     Font(R.font.montserrat_alternates_italic, FontWeight.Normal, FontStyle.Italic)
 )
 
-// Set of Material typography styles to start with
 val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = MontserratFont,

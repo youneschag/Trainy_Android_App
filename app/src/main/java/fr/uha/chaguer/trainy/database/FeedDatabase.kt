@@ -1,8 +1,6 @@
 package fr.uha.chaguer.trainy.database
 
-import android.net.Uri
 import fr.uha.chaguer.trainy.model.*
-import fr.uha.chaguer.trainy.R
 import java.util.*
 
 class FeedDatabase(

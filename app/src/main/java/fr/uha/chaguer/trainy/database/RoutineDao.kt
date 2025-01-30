@@ -7,12 +7,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.model.FullRoutine
 import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 @Dao
 interface RoutineDao {

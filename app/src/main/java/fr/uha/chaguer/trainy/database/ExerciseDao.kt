@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import fr.uha.chaguer.trainy.model.Exercise
-import fr.uha.chaguer.trainy.model.Routine
 import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import kotlinx.coroutines.flow.Flow
 

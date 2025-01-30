@@ -10,7 +10,6 @@ import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import java.util.Date
 
 class RoutineRepository(
     private val dispatcher: CoroutineDispatcher,

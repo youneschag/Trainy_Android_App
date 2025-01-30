@@ -20,20 +20,16 @@ class HomeViewModel @Inject constructor(
     private val routineRepository: RoutineRepository
 ) : ViewModel() {
 
-    // Flux pour récupérer tous les exercices
     private val _allExercises = MutableStateFlow<List<Exercise>>(emptyList())
     val allExercises = _allExercises.asStateFlow()
 
-    // Flux pour récupérer toutes les routines
     private val _allRoutines = MutableStateFlow<List<Routine>>(emptyList())
     val allRoutines = _allRoutines.asStateFlow()
 
-    // Récupérer tous les exercices
     fun getAllExercises(): Flow<List<Exercise>> {
         return allExercises
     }
 
-    // Récupérer toutes les routines
     fun getAllRoutines(): Flow<List<Routine>> {
         return allRoutines
     }
@@ -43,7 +39,6 @@ class HomeViewModel @Inject constructor(
         fetchAllRoutines()
     }
 
-    // Fonction pour récupérer tous les exercices depuis le dépôt
     private fun fetchAllExercises() {
         viewModelScope.launch {
             exerciseRepository.getAllExercises()
@@ -54,7 +49,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // Fonction pour récupérer toutes les routines depuis le dépôt
     private fun fetchAllRoutines() {
         viewModelScope.launch {
             routineRepository.getAll()

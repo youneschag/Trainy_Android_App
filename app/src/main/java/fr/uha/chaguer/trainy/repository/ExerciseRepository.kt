@@ -3,7 +3,6 @@ package fr.uha.chaguer.trainy.repository
 import androidx.annotation.WorkerThread
 import fr.uha.chaguer.trainy.database.ExerciseDao
 import fr.uha.chaguer.trainy.model.Exercise
-import fr.uha.chaguer.trainy.model.RoutineExerciseAssociation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
