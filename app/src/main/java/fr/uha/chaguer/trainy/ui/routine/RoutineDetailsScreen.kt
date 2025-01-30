@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,6 +32,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import fr.uha.chaguer.android.database.DateUtils.formatDate
+import fr.uha.chaguer.trainy.R
 import fr.uha.chaguer.trainy.model.Exercise
 import fr.uha.chaguer.trainy.ui.exercise.ExerciseViewModel
 
@@ -64,7 +66,7 @@ fun RoutineDetailsScreen(
                 )
             }
             Text(
-                text = "✍ Détails de la routine",
+                text = stringResource(R.string.detail_routine),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 8.dp)
@@ -81,15 +83,15 @@ fun RoutineDetailsScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 Text(
-                    text = "🎯 Objectif: ${fullRoutine.routine.objective}",
+                    text = stringResource(R.string.routine_objective) + " ${fullRoutine.routine.objective}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "📅 Fréquence: ${fullRoutine.routine.frequency} fois/semaine",
+                    text = stringResource(R.string.routine_frequency) + " ${fullRoutine.routine.frequency} fois/semaine",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "⏳ Début: ${formatDate(fullRoutine.routine.startDay)}",
+                    text = stringResource(R.string.routine_start_day) + " ${formatDate(fullRoutine.routine.startDay)}",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -99,14 +101,14 @@ fun RoutineDetailsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "🏋️ Exercices associés",
+                    text = stringResource(R.string.associated_exercises),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
                 if (fullRoutine.exercises.isEmpty()) {
                     Text(
-                        text = "Aucun exercice associé.",
+                        text = stringResource(R.string.no_exercises_message),
                         color = Color.Gray,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )

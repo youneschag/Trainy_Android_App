@@ -12,7 +12,7 @@
     <string name="home">Home</string>
     <string name="routine_list">Routines d\'entraînement</string>
     <string name="exercise_list">Exercices associés</string>
-    <string name="progress_tracking">Suivi des performances</string>
+    <string name="progress_realised">Progrès réalisés :</string>
     <string name="settings_screen">Paramètres</string>
     <string name="list_exercise">📋 Liste des Exercices</string>
     <string name="create_exercise">Créer un exercice</string>
@@ -29,6 +29,10 @@
     <string name="value_must_be_positive">La valeur doit être positive</string>
     <string name="value_too_large">La valeur est trop grande</string>
     <string name="save">Enregistrer</string>
+    <string name="ajout">Ajouter</string>
+    <string name="delete">Supprimer</string>
+    <string name="delete_all">Tout supprimer</string>
+    <string name="cancel">Annuler</string>
     <string name="edit_exercise">Modifier un exercice</string>
     <string name="create_routine">Créer une routine</string>
     <string name="edit_routine">Modifier une routine</string>
@@ -46,8 +50,8 @@
     <string name="start_date">Date de début</string>
     <string name="frequency">Fréquence</string>
     <string name="objectives">Objectifs</string>
-    <string name="no_exercises_message">Aucun exercice pour l\'instant</string>
-    <string name="add_exercise">Ajouter</string>
+    <string name="no_exercises_message">Aucun exercice disponible</string>
+    <string name="add_exercise">Ajouter un exercice</string>
     <string name="titre_routine">🔥 Routines 🔥</string>
     <string name="titre_exercise">💪 Exercices 💪</string>
     <string name="no_routine">Aucune routine enregistrée</string>
@@ -56,4 +60,7 @@
     <string name="description">📝 Description:</string>
     <string name="duration">⏳ Durée:</string>
     <string name="repetitions">🔄 Répétitions:</string>
+    <string name="search_exercise">🔍 Rechercher un exercice</string>
+    <string name="detail_routine">✍ Détails de la routine</string>
+    <string name="associated_exercises">🏋️ Exercices associés</string>
 </resources>

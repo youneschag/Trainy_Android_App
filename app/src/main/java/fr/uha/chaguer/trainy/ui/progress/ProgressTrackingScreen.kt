@@ -127,7 +127,7 @@ fun ProgressTrackingScreen(
                             progressList.filter { it.exerciseId == exercise.exerciseId }
                         if (progressForExercise.isNotEmpty()) {
                             Text(
-                                text = "Progrès réalisés :",
+                                text = stringResource(R.string.progress_realised),
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
                             )
@@ -288,7 +288,7 @@ fun ExerciseItemWithDoneButton(
             enabled = !isCompleted,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Enregistrer")
+            Text(stringResource(R.string.save))
         }
 
         Spacer(modifier = Modifier.height(8.dp))

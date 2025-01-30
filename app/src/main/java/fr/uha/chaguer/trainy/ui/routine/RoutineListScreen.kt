@@ -156,7 +156,7 @@ fun RoutineListScreen(
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Ajouter")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Ajouter")
+                Text(stringResource(R.string.ajout))
             }
 
             Button(
@@ -170,7 +170,7 @@ fun RoutineListScreen(
             ) {
                 Icon(Icons.Filled.Delete, contentDescription = "Tout supprimer")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Tout supprimer")
+                Text(stringResource(R.string.delete_all))
             }
         }
     }
@@ -185,12 +185,12 @@ fun RoutineListScreen(
                     routineToDelete?.let { vm.send(ListRoutinesViewModel.UIEvent.OnDelete(it)) }
                     routineToDelete = null
                 }) {
-                    Text("Supprimer")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 Button(onClick = { routineToDelete = null }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -258,19 +258,16 @@ fun RoutineItem(
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Icon(imageVector = Icons.Default.FitnessCenter, contentDescription = null, tint = Color(0xFF673AB7))
             Text(text = stringResource(R.string.routine_objective), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             Text(text = fullRoutine.routine.objective, modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Icon(imageVector = Icons.Default.Timer, contentDescription = null, tint = Color(0xFF673AB7))
             Text(text = stringResource(R.string.routine_frequency), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             Text(text = "${fullRoutine.routine.frequency} fois/semaine", modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Icon(imageVector = Icons.Default.List, contentDescription = null, tint = Color(0xFF673AB7))
             Text(text = stringResource(R.string.routine_start_day), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             Text(text = formatDate(fullRoutine.routine.startDay), modifier = Modifier.padding(start = 8.dp))
         }
@@ -302,7 +299,7 @@ fun RoutineItem(
                 onClick = onAddExercise,
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text("Ajouter un exercice")
+                Text(stringResource(R.string.add_exercise))
             }
         }
     }

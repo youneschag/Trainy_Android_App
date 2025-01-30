@@ -105,7 +105,6 @@ class FeedDatabase(
         )
 
         private val exerciseDescriptions: Array<String> = arrayOf(
-            // 🔥 Musculation & Renforcement
             "Un exercice classique pour renforcer la poitrine, les épaules et les triceps.",
             "Idéal pour renforcer les jambes, les fessiers et améliorer la stabilité du tronc.",
             "Travaille plusieurs groupes musculaires pour améliorer la mobilité et l'équilibre.",

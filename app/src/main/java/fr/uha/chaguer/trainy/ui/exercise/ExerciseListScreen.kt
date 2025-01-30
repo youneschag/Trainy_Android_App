@@ -91,7 +91,7 @@ fun ExerciseListScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            label = { Text("🔍 Rechercher un exercice") },
+            label = { Text(stringResource(R.string.search_exercise)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -115,7 +115,7 @@ fun ExerciseListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Aucun exercice disponible",
+                        text = stringResource(R.string.no_exercise),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray
@@ -127,7 +127,7 @@ fun ExerciseListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Aucun exercice trouvé",
+                        text = stringResource(R.string.no_exercises_message),
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
@@ -162,7 +162,7 @@ fun ExerciseListScreen(
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Ajouter")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Ajouter")
+                Text(stringResource(R.string.ajout))
             }
 
             Button(
@@ -176,7 +176,7 @@ fun ExerciseListScreen(
             ) {
                 Icon(Icons.Filled.Delete, contentDescription = "Tout supprimer")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Tout supprimer")
+                Text(stringResource(R.string.delete_all))
             }
         }
     }
@@ -190,10 +190,10 @@ fun ExerciseListScreen(
                 Button(onClick = {
                     exerciseToDelete?.let { vm.send(ListExercisesViewModel.UIEvent.OnDelete(it)) }
                     exerciseToDelete = null
-                }) { Text("Supprimer") }
+                }) { Text(stringResource(R.string.delete)) }
             },
             dismissButton = {
-                Button(onClick = { exerciseToDelete = null }) { Text("Annuler") }
+                Button(onClick = { exerciseToDelete = null }) { Text(stringResource(R.string.cancel)) }
             }
         )
     }
@@ -250,7 +250,7 @@ fun ExerciseItem(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "📝 Description:",
+                        text = stringResource(R.string.description),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
@@ -266,7 +266,7 @@ fun ExerciseItem(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "⏳ Durée:",
+                        text = stringResource(R.string.duration),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
@@ -282,7 +282,7 @@ fun ExerciseItem(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "🔄 Répétitions:",
+                        text = stringResource(R.string.repetitions),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
