@@ -92,7 +92,6 @@ fun ExerciseListScreen(
             .background(Color(0xFFF5F5F5))
             .padding(16.dp)
     ) {
-        // ✅ Titre et barre violette
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -111,7 +110,6 @@ fun ExerciseListScreen(
             )
         }
 
-        // ✅ Barre de recherche
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -122,15 +120,14 @@ fun ExerciseListScreen(
             singleLine = true
         )
 
-        var isExerciseListEmpty by remember { mutableStateOf(true) } // État pour vérifier si la liste est vide
+        var isExerciseListEmpty by remember { mutableStateOf(true) }
 
-        // ✅ Liste des exercices
         StateScreen(state = uiState) { content ->
             val filteredExercises = content.exercises.filter {
                 searchQuery.length < 3 || it.name.contains(searchQuery, ignoreCase = true)
             }
 
-            isExerciseListEmpty = content.exercises.isEmpty() // Mise à jour de l'état
+            isExerciseListEmpty = content.exercises.isEmpty()
 
             if (content.exercises.isEmpty()) {
                 Column(
@@ -171,7 +168,6 @@ fun ExerciseListScreen(
             }
         }
 
-        // ✅ Boutons "Ajouter" et "Tout supprimer" RESTENT visibles
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -197,7 +193,7 @@ fun ExerciseListScreen(
                     containerColor = Color(0xFFD32F2F),
                     contentColor = Color.White
                 ),
-                enabled = !isExerciseListEmpty, // ✅ Désactivation propre si la liste est vide
+                enabled = !isExerciseListEmpty,
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.Filled.Delete, contentDescription = "Tout supprimer")
@@ -207,7 +203,6 @@ fun ExerciseListScreen(
         }
     }
 
-    // ✅ Popup confirmation suppression d'un exercice
     if (exerciseToDelete != null) {
         AlertDialog(
             onDismissRequest = { exerciseToDelete = null },
@@ -225,7 +220,6 @@ fun ExerciseListScreen(
         )
     }
 
-    // ✅ Popup confirmation suppression de tous les exercices
     if (showDeleteAllDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteAllDialog = false },
@@ -244,28 +238,6 @@ fun ExerciseListScreen(
             title = { Text("Confirmation") },
             text = { Text("Êtes-vous sûr de vouloir supprimer tous les exercices ?") }
         )
-    }
-}
-
-@Composable
-fun SuccessListExercisesScreen(
-    uiState: ListExercisesViewModel.UIState,
-    navigator: DestinationsNavigator,
-    onDeleteRequest: (Exercise) -> Unit,
-    send: (ListExercisesViewModel.UIEvent) -> Unit
-) {
-    LazyColumn {
-        itemsIndexed(
-            items = uiState.exercises,
-            key = { _, item -> item.exerciseId }
-        ) { index, item ->
-            ExerciseItem(
-                exercise = item,
-                onEdit = { navigator.navigate(EditExerciseScreenDestination(it.exerciseId)) },
-                onDelete = { onDeleteRequest(it) }, // Appeler `onDeleteRequest` au lieu de supprimer directement
-                isEven = index % 2 == 0 // Détermine si l'exercice est pair ou impair
-            )
-        }
     }
 }
 

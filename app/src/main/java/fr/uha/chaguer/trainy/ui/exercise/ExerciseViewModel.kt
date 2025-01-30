@@ -132,9 +132,6 @@ class ExerciseViewModel @Inject constructor(
         data class DescriptionChanged(val newValue: String) : UIEvent()
         data class DurationChanged(val newValue: Int) : UIEvent()
         data class RepetitionsChanged(val newValue: Int) : UIEvent()
-        data class OnAddExercise(val routineId: Long, val exercise: Exercise) : UIEvent()
-        data class OnRemoveExercise(val routineId: Long, val exerciseId: Long) : UIEvent()
-        object SaveChanges : UIEvent() // Événement pour sauvegarder les modifications
     }
 
     fun send(uiEvent: UIEvent) {
@@ -152,13 +149,7 @@ class ExerciseViewModel @Inject constructor(
                 is UIEvent.RepetitionsChanged -> _repetitionsState.value =
                     fieldBuilder.buildRepetitions(uiEvent.newValue)
 
-                is UIEvent.OnAddExercise -> {
-                    repository.addExerciseToRoutine(uiEvent.routineId, uiEvent.exercise)
-                }
-                is UIEvent.OnRemoveExercise -> {
-                    repository.deleteExerciseFromRoutine(uiEvent.routineId, uiEvent.exerciseId)
-                }
-                UIEvent.SaveChanges -> save() // Sauvegarde des modifications
+                else -> {}
             }
         }
     }
@@ -184,13 +175,6 @@ class ExerciseViewModel @Inject constructor(
             _repetitionsState.value.value!!
         )
         repository.updateExercise(exercise)
-    }
-
-    fun initializeFields() {
-        _nameState.value = FieldWrapper("Push-ups")
-        _descriptionState.value = FieldWrapper("Arms in the bar while holding")
-        _durationState.value = FieldWrapper(15)
-        _repetitionsState.value = FieldWrapper(3)
     }
 
     fun getAllExercises(): Flow<List<Exercise>> {
