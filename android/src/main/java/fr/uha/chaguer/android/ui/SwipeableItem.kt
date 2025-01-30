@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeableItem(
     modifier: Modifier = Modifier,
@@ -64,7 +63,7 @@ fun SwipeableItem(
             if (onDelete == null && direction == SwipeToDismissBoxValue.EndToStart) return@SwipeToDismissBox
             val color by animateColorAsState(
                 targetValue = when (dismissState.targetValue) {
-                    SwipeToDismissBoxValue.Settled -> Color.White
+                    SwipeToDismissBoxValue.Settled -> Color.LightGray
                     SwipeToDismissBoxValue.EndToStart -> Color(0xFFFF0000)
                     SwipeToDismissBoxValue.StartToEnd -> Color(0xFF00FF00)
                 }, label = "color"
